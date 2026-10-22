@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据类型与逢7过练习</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #F5F2EC; color: #1F1D1A;
+    padding: 32px 20px 56px;
+  }
+  .fxc_wrap { max-width: 760px; margin: 0 auto; }
+  .fxc_title { font-size: 22px; margin-bottom: 6px; }
+  .fxc_tip { font-size: 13px; color: #9A938A; margin-bottom: 24px; }
+  .fxc_section { margin-bottom: 32px; }
+  .fxc_section h2 { font-size: 15px; margin-bottom: 12px; }
+  .fxc_grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+  }
+  .fxc_grid div, .fxc_container div {
+    background: #FFFEFB;
+    border: 1px solid #E6E0D4;
+    border-radius: 6px;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  .fxc_container {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+  }
+  .fxc_skip { background: #ff6b6b; color: #fff; font-weight: bold; }
+  .fxc_home { display: inline-block; margin-top: 8px; font-size: 13px; color: #0E7C73; }
+</style>
+</head>
+<body>
+<div class="fxc_wrap">
+  <h1 class="fxc_title">数据类型与「逢 7 过」</h1>
+  <p class="fxc_tip">控制台输出练习 + 1–100 数字格渲染（结果见浏览器 Console）</p>
+
+  <div class="fxc_section">
+    <h2>渲染一：含 7 与 7 的倍数直接跳过</h2>
+    <div id="fxc_grid" class="fxc_grid"></div>
+  </div>
+
+  <div class="fxc_section">
+    <h2>渲染二：含 7 与 7 的倍数标记为「过」</h2>
+    <div id="fxc_container" class="fxc_container"></div>
+  </div>
+
+  <a class="fxc_home" href="index.html">返回首页</a>
+</div>
+
+<script>
+  // 控制台基础练习
+  var fxc_a = 1, fxc_b = 2;
+  console.log(fxc_a++);
+  console.log(fxc_a - fxc_b > 0 ? fxc_a : fxc_b);
+  console.log(true && false || true, true || false, !false);
+
+  var fxc_str = "hello world", fxc_num = 10, fxc_ble = true;
+  var fxc_ud, fxc_obj = { name: "张三", age: 20, sex: "男" }, fxc_arr = [1, 2, 3, 4, 5];
+  console.log(typeof fxc_str, typeof fxc_num, typeof fxc_ble, typeof fxc_ud, typeof fxc_obj, typeof fxc_arr);
+  console.log(0.1 + 0.2 == 0.3, 0.1 + 0.2);
+  console.log(NaN == NaN);
+  console.log(parseInt(12, 10));
+
+  // 渲染一：跳过含 7 的数字
+  var fxc_grid = document.getElementById("fxc_grid");
+  for (var fxc_i = 1; fxc_i <= 100; fxc_i++) {
+    if (fxc_i % 7 === 0 || fxc_i.toString().indexOf("7") !== -1) {
+      continue;
+    }
+    var fxc_cell = document.createElement("div");
+    fxc_cell.textContent = fxc_i;
+    fxc_grid.appendChild(fxc_cell);
+  }
+
+  // 渲染二：含 7 的数字显示「过」并高亮
+  var fxc_container = document.getElementById("fxc_container");
+  for (var fxc_j = 1; fxc_j <= 100; fxc_j++) {
+    var fxc_item = document.createElement("div");
+    if (fxc_j % 7 === 0 || String(fxc_j).includes("7")) {
+      fxc_item.innerText = "过";
+      fxc_item.classList.add("fxc_skip");
+    } else {
+      fxc_item.innerText = fxc_j;
+    }
+    fxc_container.appendChild(fxc_item);
+  }
+</script>
+</body>
+</html>
