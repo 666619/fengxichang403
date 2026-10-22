@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="冯玺成的高级网页设计课堂实践目录">
+    <title>高级网页设计 | 冯玺成的课堂实践</title>
+    <style>
+        :root {
+            --ink: #17222f;
+            --muted: #667483;
+            --paper: #f6f3ed;
+            --card: #fffdf8;
+            --line: #d9d5cb;
+            --coral: #d9634c;
+            --coral-dark: #a94335;
+            --blue: #2d6171;
+            --yellow: #e5b84b;
+            --shadow: 0 18px 45px rgba(31, 43, 53, 0.09);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page-shell {
+            margin: 0 auto;
+            max-width: 1180px;
+            padding: 28px 28px 60px;
+        }
+
+        .topbar {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 76px;
+        }
+
+        .brand {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .brand-mark {
+            align-items: center;
+            background: var(--coral);
+            color: #fff;
+            display: inline-flex;
+            font-family: Georgia, serif;
+            font-size: 18px;
+            height: 38px;
+            justify-content: center;
+            transform: rotate(-6deg);
+            width: 38px;
+        }
+
+        .topbar-note {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .hero {
+            align-items: end;
+            display: grid;
+            gap: 42px;
+            grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.55fr);
+            margin-bottom: 76px;
+        }
+
+        .eyebrow {
+            color: var(--coral-dark);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(46px, 7vw, 92px);
+            font-weight: 400;
+            letter-spacing: 0;
+            line-height: 0.98;
+            max-width: 760px;
+        }
+
+        h1 em {
+            color: var(--coral);
+            font-style: normal;
+        }
+
+        .hero-intro {
+            border-left: 3px solid var(--yellow);
+            color: var(--muted);
+            font-size: 15px;
+            padding: 8px 0 8px 22px;
+        }
+
+        .hero-intro strong {
+            color: var(--ink);
+            display: block;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .directory-heading {
+            align-items: baseline;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+        }
+
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30px;
+            font-weight: 400;
+        }
+
+        .directory-heading span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .course-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .course-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            min-height: 270px;
+            padding: 25px;
+            position: relative;
+            transition: border-color 180ms ease, transform 180ms ease;
+        }
+
+        .course-card:not(.is-coming):hover {
+            border-color: var(--coral);
+            transform: translateY(-5px);
+        }
+
+        .course-number {
+            color: var(--coral);
+            font-family: Georgia, serif;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .course-card h3 {
+            font-size: 22px;
+            margin: 36px 0 7px;
+        }
+
+        .course-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .course-link {
+            align-items: center;
+            color: var(--blue);
+            display: inline-flex;
+            font-size: 14px;
+            font-weight: 700;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 22px;
+        }
+
+        .course-link::after {
+            content: "→";
+            font-size: 20px;
+            transition: transform 180ms ease;
+        }
+
+        .course-link:hover::after {
+            transform: translateX(5px);
+        }
+
+        .is-coming {
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .is-coming .course-number {
+            color: var(--muted);
+        }
+
+        .status {
+            border: 1px solid var(--line);
+            color: var(--muted);
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            margin-top: auto;
+            padding: 4px 9px;
+            width: fit-content;
+        }
+
+        .prompt-section {
+            border-top: 1px solid var(--line);
+            margin-top: 76px;
+            padding-top: 28px;
+        }
+
+        .prompt-section h2 {
+            font-size: 24px;
+            margin-bottom: 14px;
+        }
+
+        .prompt-box {
+            background: #ebe6dc;
+            border-left: 4px solid var(--blue);
+            color: #465461;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            max-height: 250px;
+            overflow: auto;
+            padding: 18px 20px;
+            white-space: pre-wrap;
+        }
+
+        footer {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 34px;
+        }
+
+        @media (max-width: 760px) {
+            .page-shell {
+                padding: 22px 18px 40px;
+            }
+
+            .topbar {
+                margin-bottom: 52px;
+            }
+
+            .topbar-note {
+                display: none;
+            }
+
+            .hero {
+                display: block;
+                margin-bottom: 52px;
+            }
+
+            h1 {
+                font-size: clamp(48px, 15vw, 72px);
+                max-width: 600px;
+            }
+
+            .hero-intro {
+                margin-top: 28px;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-card {
+                min-height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="./index.html" aria-label="返回课程首页">
+                <span class="brand-mark">F</span>
+                <span>课堂实践档案</span>
+            </a>
+            <span class="topbar-note">ADVANCED WEB DESIGN / 2026</span>
+        </header>
+
+        <main>
+            <section class="hero" aria-labelledby="page-title">
+                <div>
+                    <p class="eyebrow">冯玺成 · 学习记录</p>
+                    <h1 id="page-title">高级网页<br><em>设计</em>课堂实践</h1>
+                </div>
+                <p class="hero-intro">
+                    <strong>从标签开始，构建页面。</strong>
+                    这里记录课堂练习、网页作品与逐步成形的设计思考。目录会随着课程推进持续更新。
+                </p>
+            </section>
+
+            <section aria-labelledby="directory-title">
+                <div class="directory-heading">
+                    <h2 id="directory-title">课堂目录</h2>
+                    <span>已收录 01 / 持续增加</span>
+                </div>
+                <div class="course-grid">
+                    <article class="course-card">
+                        <span class="course-number">01</span>
+                        <h3>HTML 基础</h3>
+                        <p>标题、段落、列表、表格、语义化标签与基础表单练习。</p>
+                        <a class="course-link" href="./img/html_basic_css">打开课堂实践</a>
+                    </article>
+
+                    <article class="course-card is-coming">
+                        <span class="course-number">02</span>
+                        <h3>自我介绍网页</h3>
+                        <p>个人信息、兴趣表达与页面结构设计，等待作品加入。</p>
+                        <span class="status">后续添加</span>
+                    </article>
+
+                    <article class="course-card is-coming">
+                        <span class="course-number">03</span>
+                        <h3>更多模块</h3>
+                        <p>CSS 布局、交互设计与综合实践将在课程中逐步收录。</p>
+                        <span class="status">后续添加</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="prompt-section" aria-labelledby="prompt-title">
+                <h2 id="prompt-title">本次页面创建提示词</h2>
+                <div class="prompt-box">创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为冯玺成的《高级网页设计》课堂实践，美化页面，课堂目录中包含HTML基础、自我介绍网页、其余模块后续在增加。页面中包括本提示词。</div>
+            </section>
+        </main>
+
+        <footer>© 冯玺成 · 高级网页设计课堂实践</footer>
+    </div>
+</body>
+</html>

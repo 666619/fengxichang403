@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>线稿绘图仪 · Lucide SVG 图标</title>
+<script src="cdn/lucide/lucide.min.js"></script>
+<style>
+  :root {
+    --fxc-paper: #FCFBF7;
+    --fxc-ink: #26241F;
+    --fxc-ink-soft: #8A857A;
+    --fxc-pen: #C93B2A;
+    --fxc-grid: rgba(38, 36, 31, .055);
+    --fxc-grid-strong: rgba(38, 36, 31, .12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:
+      linear-gradient(var(--fxc-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--fxc-grid) 1px, transparent 1px),
+      linear-gradient(var(--fxc-grid-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--fxc-grid-strong) 1px, transparent 1px),
+      var(--fxc-paper);
+    background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+    color: var(--fxc-ink);
+    padding: 64px 24px 96px;
+  }
+  .fxc_container { max-width: 1000px; margin: 0 auto; }
+
+  /* 页眉：绘图注记 */
+  .fxc_masthead {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--fxc-ink);
+    padding-bottom: 14px; margin-bottom: 56px;
+    font-family: "SF Mono", Consolas, "Courier New", monospace;
+    font-size: 12px; color: var(--fxc-ink-soft);
+  }
+
+  /* 主视觉 */
+  .fxc_hero { text-align: center; margin-bottom: 64px; }
+  .fxc_hero_glyph {
+    width: clamp(110px, 18vw, 180px); height: auto;
+    stroke-width: 1.1; color: var(--fxc-ink);
+    margin-bottom: 24px;
+  }
+  .fxc_hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 500; letter-spacing: .02em;
+  }
+  .fxc_hero p {
+    margin: 14px auto 0; color: var(--fxc-ink-soft);
+    font-size: 15px; line-height: 1.9; max-width: 46em;
+  }
+  .fxc_hero em { color: var(--fxc-pen); font-style: normal; }
+
+  /* 图版：发丝线格 */
+  .fxc_plate {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    border-top: 1px solid var(--fxc-grid-strong);
+    border-left: 1px solid var(--fxc-grid-strong);
+  }
+  .fxc_cell {
+    border-right: 1px solid var(--fxc-grid-strong);
+    border-bottom: 1px solid var(--fxc-grid-strong);
+    padding: 30px 14px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .fxc_no {
+    position: absolute; top: 8px; left: 10px;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 10px; color: var(--fxc-ink-soft);
+  }
+  .fxc_icon {
+    width: 34px; height: 34px; stroke-width: 1.4;
+    margin-bottom: 12px;
+    transition: color .25s ease;
+  }
+  .fxc_cell:hover .fxc_icon { color: var(--fxc-pen); }
+  .fxc_name {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 11px; color: var(--fxc-ink-soft);
+  }
+
+  /* 页脚 */
+  .fxc_colophon {
+    margin-top: 56px; padding-top: 18px;
+    border-top: 1px solid var(--fxc-grid-strong);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-family: "SF Mono", Consolas, monospace; font-size: 12px;
+  }
+  .fxc_colophon a { color: var(--fxc-pen); text-decoration: none; border-bottom: 1px solid currentColor; }
+  .fxc_colophon a:hover { color: var(--fxc-ink); }
+  .fxc_colophon span { color: var(--fxc-ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fxc_icon, .fxc_hero_glyph { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="fxc_container">
+
+  <div class="fxc_masthead">
+    <span>fig. 02 — pen plotter studies</span>
+    <span>scale 1:1 · stroke 1.4</span>
+  </div>
+
+  <header class="fxc_hero">
+    <i data-lucide="pen-tool" class="fxc_hero_glyph"></i>
+    <h1>Lucide 线稿图标</h1>
+    <p>每一枚图标都是一段<em>矢量路径</em>——不是字形，而是钢笔在坐标纸上
+       一笔画出的线稿。页面载入时，绘图仪将所有图样重绘一遍。</p>
+  </header>
+
+  <main class="fxc_plate">
+    <div class="fxc_cell"><span class="fxc_no">p-01</span><i data-lucide="house" class="fxc_icon"></i><div class="fxc_name">house</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-02</span><i data-lucide="user" class="fxc_icon"></i><div class="fxc_name">user</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-03</span><i data-lucide="heart" class="fxc_icon"></i><div class="fxc_name">heart</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-04</span><i data-lucide="star" class="fxc_icon"></i><div class="fxc_name">star</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-05</span><i data-lucide="settings" class="fxc_icon"></i><div class="fxc_name">settings</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-06</span><i data-lucide="search" class="fxc_icon"></i><div class="fxc_name">search</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-07</span><i data-lucide="mail" class="fxc_icon"></i><div class="fxc_name">mail</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-08</span><i data-lucide="camera" class="fxc_icon"></i><div class="fxc_name">camera</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-09</span><i data-lucide="music" class="fxc_icon"></i><div class="fxc_name">music</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-10</span><i data-lucide="shopping-cart" class="fxc_icon"></i><div class="fxc_name">shopping-cart</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-11</span><i data-lucide="bell" class="fxc_icon"></i><div class="fxc_name">bell</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-12</span><i data-lucide="smile" class="fxc_icon"></i><div class="fxc_name">smile</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-13</span><i data-lucide="github" class="fxc_icon"></i><div class="fxc_name">github</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-14</span><i data-lucide="message-circle" class="fxc_icon"></i><div class="fxc_name">message-circle</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-15</span><i data-lucide="cloud" class="fxc_icon"></i><div class="fxc_name">cloud</div></div>
+    <div class="fxc_cell"><span class="fxc_no">p-16</span><i data-lucide="rocket" class="fxc_icon"></i><div class="fxc_name">rocket</div></div>
+  </main>
+
+  <footer class="fxc_colophon">
+    <a href="index.html">返回首页</a>
+    <span>另见：<a href="iconfont-1.html">Font Awesome 字形铸排</a></span>
+  </footer>
+
+</div>
+
+<script>
+  lucide.createIcons();
+
+  // 绘图仪式自绘：所有路径以 stroke-dash 动画依次画出
+  var fxc_reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!fxc_reduced) {
+    var fxc_shapes = document.querySelectorAll(
+      ".fxc_plate svg path, .fxc_plate svg circle, .fxc_plate svg line, .fxc_plate svg polyline, .fxc_plate svg polygon, .fxc_plate svg rect"
+    );
+    fxc_shapes.forEach(function (fxc_el, fxc_i) {
+      try {
+        var fxc_len = fxc_el.getTotalLength();
+        fxc_el.style.strokeDasharray = fxc_len;
+        fxc_el.style.strokeDashoffset = fxc_len;
+        fxc_el.style.transition = "stroke-dashoffset .9s cubic-bezier(.4,0,.2,1) " + (fxc_i * 35) + "ms";
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { fxc_el.style.strokeDashoffset = "0"; });
+        });
+      } catch (fxc_err) { /* 非几何元素跳过 */ }
+    });
+  }
+</script>
+</body>
+</html>

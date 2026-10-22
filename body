@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100px;
+            background-color: pink;
+        }
+        .item{
+            width: 100px;
+            height: 50px;
+            background-color: yellow;
+        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网格布局</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .photo_box{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /*grid-template-columns: 1fr 1fr 1fr;*/
+            gap: 10px 15px;
+        }
+        .photo{
+            min-height: 100px;
+            background-color: pink;
+            border: 1px solid red;
+            border-radius: 5px;
+            
+        }
+       
+</head>
+<body>
+    
+</body>
+</html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的第一个网页</title>
+<link rel="stylesheet" href="./html_basic.css">
+    <style>

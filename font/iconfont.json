@@ -1,0 +1,37 @@
+{
+  "id": "5238925",
+  "name": "403",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "48570042",
+      "name": "browser",
+      "font_class": "browser",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "48570046",
+      "name": "nav",
+      "font_class": "nav",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "48570052",
+      "name": "love",
+      "font_class": "love",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "48570054",
+      "name": "positioning",
+      "font_class": "positioning",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    }
+  ]
+}

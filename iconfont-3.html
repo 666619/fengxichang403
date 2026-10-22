@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>底部导航 · 字体图标方式</title>
+<link rel="stylesheet" href="font/iconfont.css">
+<style>
+  :root {
+    --fxc-paper: #F5F2EC;
+    --fxc-surface: #FFFEFB;
+    --fxc-ink: #1F1D1A;
+    --fxc-muted: #9A938A;
+    --fxc-jade: #0E7C73;
+    --fxc-badge: #E5484D;
+    --fxc-rule: #E6E0D4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--fxc-paper);
+    color: var(--fxc-ink);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+
+  /* 手机样机：自适应宽度，最大 430 */
+  .fxc_phone {
+    width: min(430px, 100%);
+    height: min(780px, calc(100vh - 48px));
+    min-height: 520px;
+    background: var(--fxc-surface);
+    border: 1px solid var(--fxc-rule);
+    border-radius: 28px;
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* 顶部状态与标题 */
+  .fxc_statusbar {
+    display: flex; justify-content: space-between;
+    padding: 18px 24px 0;
+    font-size: 12px; color: var(--fxc-muted);
+  }
+  .fxc_appbar {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--fxc-rule);
+  }
+  .fxc_appbar h1 { font-size: 22px; font-weight: 600; }
+  .fxc_appbar p { margin-top: 4px; font-size: 12.5px; color: var(--fxc-muted); }
+
+  /* 内容占位 */
+  .fxc_feed { flex: 1; padding: 20px 24px; overflow: hidden; }
+  .fxc_line {
+    height: 12px; border-radius: 6px;
+    background: var(--fxc-paper);
+    margin-bottom: 14px;
+  }
+  .fxc_line:nth-child(1) { width: 82%; }
+  .fxc_line:nth-child(2) { width: 64%; }
+  .fxc_line:nth-child(3) { width: 74%; }
+  .fxc_line:nth-child(4) { width: 45%; }
+  .fxc_hint {
+    margin-top: 28px; font-size: 12.5px; color: var(--fxc-muted); line-height: 1.9;
+  }
+  .fxc_hint em { color: var(--fxc-jade); font-style: normal; }
+
+  /* 底部导航：固定 + 自适应均分 */
+  .fxc_tabbar {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: flex;
+    background: var(--fxc-surface);
+    border-top: 1px solid var(--fxc-rule);
+    padding: 8px 0 calc(10px + env(safe-area-inset-bottom));
+  }
+  .fxc_tab {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: none; border: none; cursor: pointer;
+    color: var(--fxc-muted);
+    font-family: inherit;
+    padding: 6px 0 2px;
+  }
+  .fxc_tab.fxc_active { color: var(--fxc-jade); }
+  .fxc_tabicon_wrap { position: relative; line-height: 0; }
+  .fxc_tabicon { font-size: 24px; }
+  .fxc_tablabel { font-size: 11px; }
+
+  /* 徽章：数字与红点 */
+  .fxc_badge {
+    position: absolute; top: -5px; left: 100%;
+    transform: translateX(-4px);
+    min-width: 17px; height: 17px; padding: 0 5px;
+    background: var(--fxc-badge); color: #fff;
+    border-radius: 9px;
+    font-size: 10.5px; line-height: 17px;
+    font-style: normal; text-align: center;
+    box-shadow: 0 0 0 2px var(--fxc-surface);
+  }
+  .fxc_dot {
+    position: absolute; top: -2px; left: 100%;
+    transform: translateX(-1px);
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--fxc-badge);
+    box-shadow: 0 0 0 2px var(--fxc-surface);
+  }
+
+  /* 页脚 */
+  .fxc_footer {
+    position: fixed; bottom: 12px; left: 0; right: 0;
+    text-align: center; font-size: 12px;
+  }
+  .fxc_footer a { color: var(--fxc-jade); text-decoration: none; border-bottom: 1px solid currentColor; margin: 0 8px; }
+</style>
+</head>
+<body>
+
+<div class="fxc_phone">
+  <div class="fxc_statusbar"><span>9:41</span><span>iconfont · 字体方式</span></div>
+  <div class="fxc_appbar">
+    <h1>发现</h1>
+    <p>底部导航 · 字体图标渲染</p>
+  </div>
+  <div class="fxc_feed">
+    <div class="fxc_line"></div>
+    <div class="fxc_line"></div>
+    <div class="fxc_line"></div>
+    <div class="fxc_line"></div>
+    <p class="fxc_hint">图标来自本地 <em>font/iconfont</em> 字体文件，
+       以 <em>&lt;i class="iconfont icon-xxx"&gt;</em> 字体字形方式渲染。
+       点击底部标签可切换。</p>
+  </div>
+
+  <nav class="fxc_tabbar">
+    <button class="fxc_tab fxc_active">
+      <span class="fxc_tabicon_wrap"><i class="iconfont icon-browser fxc_tabicon"></i></span>
+      <span class="fxc_tablabel">浏览</span>
+    </button>
+    <button class="fxc_tab">
+      <span class="fxc_tabicon_wrap"><i class="iconfont icon-nav fxc_tabicon"></i></span>
+      <span class="fxc_tablabel">导航</span>
+    </button>
+    <button class="fxc_tab">
+      <span class="fxc_tabicon_wrap">
+        <i class="iconfont icon-love fxc_tabicon"></i>
+        <em class="fxc_badge">12</em>
+      </span>
+      <span class="fxc_tablabel">收藏</span>
+    </button>
+    <button class="fxc_tab">
+      <span class="fxc_tabicon_wrap">
+        <i class="iconfont icon-positioning fxc_tabicon"></i>
+        <span class="fxc_dot"></span>
+      </span>
+      <span class="fxc_tablabel">定位</span>
+    </button>
+  </nav>
+</div>
+
+<div class="fxc_footer">
+  <a href="index.html">返回首页</a>
+  <a href="iconfont-4.html">SVG 方式</a>
+</div>
+
+<script>
+  var fxc_tabs = document.querySelectorAll(".fxc_tab");
+  fxc_tabs.forEach(function (fxc_tab) {
+    fxc_tab.addEventListener("click", function () {
+      fxc_tabs.forEach(function (fxc_t) { fxc_t.classList.remove("fxc_active"); });
+      fxc_tab.classList.add("fxc_active");
+    });
+  });
+</script>
+</body>
+</html>

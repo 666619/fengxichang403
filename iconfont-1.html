@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字形铸排 · Font Awesome 字体图标</title>
+<link rel="stylesheet" href="cdn/fontawesome/css/all.min.css">
+<style>
+  :root {
+    --fxc-paper: #F7F3EA;
+    --fxc-ink: #211E18;
+    --fxc-ink-soft: #6E6759;
+    --fxc-cast: #3D5A99;
+    --fxc-rule: #D8D0BE;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", "SimSun", serif;
+    background: var(--fxc-paper);
+    color: var(--fxc-ink);
+    padding: 64px 24px 96px;
+  }
+  .fxc_container { max-width: 1000px; margin: 0 auto; }
+
+  /* 页眉：铸排所铭牌 */
+  .fxc_masthead {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 2px solid var(--fxc-ink);
+    padding-bottom: 14px; margin-bottom: 56px;
+  }
+  .fxc_masthead small { color: var(--fxc-ink-soft); font-size: 13px; letter-spacing: .12em; }
+
+  /* 主视觉：一枚放大的铸字 */
+  .fxc_hero { text-align: center; margin-bottom: 64px; }
+  .fxc_hero_glyph {
+    font-size: clamp(120px, 22vw, 220px);
+    line-height: 1; color: var(--fxc-ink);
+    display: block; margin-bottom: 24px;
+  }
+  .fxc_hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: normal; letter-spacing: .04em;
+  }
+  .fxc_hero p {
+    margin-top: 14px; color: var(--fxc-ink-soft);
+    font-size: 15px; line-height: 1.9;
+    max-width: 46em; margin-left: auto; margin-right: auto;
+  }
+  .fxc_hero em { color: var(--fxc-cast); font-style: normal; }
+
+  /* 样本格：发丝线表格，无卡片无阴影 */
+  .fxc_specimen {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    border-top: 1px solid var(--fxc-rule);
+    border-left: 1px solid var(--fxc-rule);
+  }
+  .fxc_cell {
+    border-right: 1px solid var(--fxc-rule);
+    border-bottom: 1px solid var(--fxc-rule);
+    padding: 28px 14px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .fxc_no {
+    position: absolute; top: 8px; left: 10px;
+    font-size: 11px; color: var(--fxc-ink-soft); letter-spacing: .1em;
+  }
+  .fxc_glyph {
+    display: block; font-size: 42px; margin-bottom: 14px;
+    transition: color .25s ease;
+  }
+  .fxc_cell:hover .fxc_glyph { color: var(--fxc-cast); }
+  .fxc_name { font-size: 12.5px; color: var(--fxc-ink-soft); }
+
+  /* 页脚 */
+  .fxc_colophon {
+    margin-top: 56px; padding-top: 18px;
+    border-top: 1px solid var(--fxc-rule);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-size: 13px;
+  }
+  .fxc_colophon a { color: var(--fxc-cast); text-decoration: none; border-bottom: 1px solid currentColor; }
+  .fxc_colophon a:hover { color: var(--fxc-ink); }
+  .fxc_colophon span { color: var(--fxc-ink-soft); }
+</style>
+</head>
+<body>
+<div class="fxc_container">
+
+  <div class="fxc_masthead">
+    <small>字形铸排所 · 样本第壹号</small>
+    <small>FONT FOUNDRY SPECIMEN</small>
+  </div>
+
+  <header class="fxc_hero">
+    <i class="fa-solid fa-feather-pointed fxc_hero_glyph"></i>
+    <h1>Font Awesome 字体图标</h1>
+    <p>每一个图标都是一枚铸好的活字——以<em>字体</em>的形式排印到页面上，
+       随字号缩放，随墨色晕染。本页以铸字厂样本页的方式，辑录十六枚常用字形。</p>
+  </header>
+
+  <main class="fxc_specimen">
+    <div class="fxc_cell"><span class="fxc_no">001</span><i class="fa-solid fa-house fxc_glyph"></i><div class="fxc_name">fa-house</div></div>
+    <div class="fxc_cell"><span class="fxc_no">002</span><i class="fa-solid fa-user fxc_glyph"></i><div class="fxc_name">fa-user</div></div>
+    <div class="fxc_cell"><span class="fxc_no">003</span><i class="fa-solid fa-heart fxc_glyph"></i><div class="fxc_name">fa-heart</div></div>
+    <div class="fxc_cell"><span class="fxc_no">004</span><i class="fa-solid fa-star fxc_glyph"></i><div class="fxc_name">fa-star</div></div>
+    <div class="fxc_cell"><span class="fxc_no">005</span><i class="fa-solid fa-gear fxc_glyph"></i><div class="fxc_name">fa-gear</div></div>
+    <div class="fxc_cell"><span class="fxc_no">006</span><i class="fa-solid fa-magnifying-glass fxc_glyph"></i><div class="fxc_name">fa-magnifying-glass</div></div>
+    <div class="fxc_cell"><span class="fxc_no">007</span><i class="fa-solid fa-envelope fxc_glyph"></i><div class="fxc_name">fa-envelope</div></div>
+    <div class="fxc_cell"><span class="fxc_no">008</span><i class="fa-solid fa-camera fxc_glyph"></i><div class="fxc_name">fa-camera</div></div>
+    <div class="fxc_cell"><span class="fxc_no">009</span><i class="fa-solid fa-music fxc_glyph"></i><div class="fxc_name">fa-music</div></div>
+    <div class="fxc_cell"><span class="fxc_no">010</span><i class="fa-solid fa-cart-shopping fxc_glyph"></i><div class="fxc_name">fa-cart-shopping</div></div>
+    <div class="fxc_cell"><span class="fxc_no">011</span><i class="fa-regular fa-bell fxc_glyph"></i><div class="fxc_name">fa-bell</div></div>
+    <div class="fxc_cell"><span class="fxc_no">012</span><i class="fa-regular fa-face-smile fxc_glyph"></i><div class="fxc_name">fa-face-smile</div></div>
+    <div class="fxc_cell"><span class="fxc_no">013</span><i class="fa-brands fa-github fxc_glyph"></i><div class="fxc_name">fa-github</div></div>
+    <div class="fxc_cell"><span class="fxc_no">014</span><i class="fa-brands fa-weixin fxc_glyph"></i><div class="fxc_name">fa-weixin</div></div>
+    <div class="fxc_cell"><span class="fxc_no">015</span><i class="fa-solid fa-cloud fxc_glyph"></i><div class="fxc_name">fa-cloud</div></div>
+    <div class="fxc_cell"><span class="fxc_no">016</span><i class="fa-solid fa-rocket fxc_glyph"></i><div class="fxc_name">fa-rocket</div></div>
+  </main>
+
+  <footer class="fxc_colophon">
+    <a href="index.html">返回首页</a>
+    <span>另见：<a href="inconfont-2.html">Lucide 线稿绘图仪</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

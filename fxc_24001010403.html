@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄音乐 | 网页元素设计 fxc 24001010403</title>
+    <style>
+        /* ==========【全局公共CSS】实验要求 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f4f5f7;
+            font-family: "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            color: #333333;
+        }
+        ul {
+            list-style: none;
+        }
+        img {
+            display: block;
+            width: 100%;
+            object-fit: cover;
+        }
+        /*单行文字溢出省略号*/
+        .text-ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ==========网页元素1：推荐页面 fxc_24001010403_recommend ========== */
+        .fxc_24001010403_recommend {
+            width: 360px;
+            margin: 15px auto;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        /*搜索框*/
+        .fxc_24001010403_search_box {
+            height: 36px;
+            background-color: #eeeeee;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            margin-bottom:12px;
+            color:#999;
+        }
+        /*顶部5个功能卡片 grid布局*/
+        .fxc_24001010403_func_wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom:18px;
+        }
+        .fxc_24001010403_func_card {
+            height: 88px;
+            border-radius:8px;
+            padding:10px;
+            color:#fff;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        }
+        .fxc_24001010403_func_card:nth-child(1) {background:#5397e7;}
+        .fxc_24001010403_func_card:nth-child(2) {background:#9877ec;}
+        .fxc_24001010403_func_card:nth-child(3) {background:#ed78bb;}
+        .fxc_24001010403_func_card:nth-child(4) {background:#71c771;}
+        .fxc_24001010403_func_card:nth-child(5) {
+            background:#4193e8;
+            grid-column: 1 / -1;
+        }
+        /*歌曲列表项 左图右文 flex布局*/
+        .fxc_24001010403_song_item {
+            display:flex;
+            gap:10px;
+            padding:10px 0;
+            border-bottom:1px solid #eee;
+        }
+        .fxc_24001010403_song_cover {
+            width:52px;
+            height:52px;
+            border-radius:6px;
+            flex-shrink:0;
+        }
+        .fxc_24001010403_song_text {
+            flex: 1;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        }
+        .fxc_24001010403_song_title {
+            font-size:15px;
+            margin-bottom:4px;
+        }
+        .fxc_24001010403_song_sub {
+            font-size:12px;
+            color:#888;
+        }
+
+        /* ==========网页元素2：找歌分类页 fxc_24001010403_find ========== */
+        .fxc_24001010403_find {
+            width: 360px;
+            margin:30px auto;
+            background:#fff;
+            padding:12px;
+            border-radius:10px;
+        }
+        .fxc_24001010403_category_wrap {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+        }
+        .fxc_24001010403_cat_card {
+            height:110px;
+            border-radius:8px;
+            padding:14px;
+            color:#ffffff;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        }
+        .fxc_24001010403_cat_card:nth-child(1){background:#595697;}
+        .fxc_24001010403_cat_card:nth-child(2){background:#5f984d;}
+        .fxc_24001010403_cat_card:nth-child(3){background:#b73f4f;}
+        .fxc_24001010403_cat_card:nth-child(4){background:#98774a;}
+        .fxc_24001010403_cat_card:nth-child(5){background:#937337;}
+        .fxc_24001010403_cat_card:nth-child(6){background:#7b4798;}
+        .fxc_24001010403_cat_card:nth-child(7){background:#6f5647;}
+        .fxc_24001010403_cat_card:nth-child(8){background:#467881;}
+        .fxc_24001010403_cat_name {
+            font-size:17px;
+            font-weight:bold;
+            margin-bottom:6px;
+        }
+        .fxc_24001010403_cat_desc {
+            font-size:12px;
+            opacity:0.9;
+        }
+
+        /* ==========网页元素3：经典老歌列表 fxc_24001010403_old ========== */
+        .fxc_24001010403_old {
+            width: 360px;
+            margin:30px auto;
+            background:#ffffff;
+            padding:12px;
+            border-radius:10px;
+        }
+        /*标签tab栏 flex*/
+        .fxc_24001010403_tab_bar {
+            display:flex;
+            gap:12px;
+            margin-bottom:16px;
+        }
+        .fxc_24001010403_tab_item {
+            padding:4px 11px;
+            border-radius:14px;
+            background:#eeeeee;
+            font-size:13px;
+        }
+        .fxc_24001010403_tab_item.active {
+            background:#ff4656;
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+
+<!-- =========网页元素1：推荐页面========= -->
+<section class="fxc_24001010403_recommend">
+    <div class="fxc_24001010403_search_box">搜索歌曲</div>
+    <div class="fxc_24001010403_func_wrap">
+        <div class="fxc_24001010403_func_card">
+            <div>每日推荐</div>
+            <div style="font-size:12px;opacity:0.9;">八千里路明月照</div>
+        </div>
+        <div class="fxc_24001010403_func_card">
+            <div>听过的歌</div>
+        </div>
+        <div class="fxc_24001010403_func_card">
+            <div>喜欢的歌</div>
+        </div>
+        <div class="fxc_24001010403_func_card">
+            <div>分类找歌</div>
+        </div>
+        <div class="fxc_24001010403_func_card">
+            <div>排行榜</div>
+        </div>
+    </div>
+
+    <!--歌曲列表-->
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1035/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">琵琶曲（DJ筱轩版）</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">冰洁&郭浩 - 琵琶曲(DJ版)</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1036/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">荒(一念间天堂灭仙)</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">莫小檀 - 荒(一念间天堂灭仙)</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========网页元素2：找歌分类页面========= -->
+<section class="fxc_24001010403_find">
+    <div class="fxc_24001010403_category_wrap">
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">二次元音乐</div>
+            <div class="fxc_24001010403_cat_desc">用音符连接虚拟与现实</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">DJ</div>
+            <div class="fxc_24001010403_cat_desc">极具节奏感的洗脑神曲</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">抖音热门</div>
+            <div class="fxc_24001010403_cat_desc">火遍全网的热门歌曲</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">古风</div>
+            <div class="fxc_24001010403_cat_desc">感受东方诗意乐章</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">金曲</div>
+            <div class="fxc_24001010403_cat_desc">永不过时的经典之声</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">00后最爱</div>
+            <div class="fxc_24001010403_cat_desc">00后专属新生代潮流音乐</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">90年代</div>
+            <div class="fxc_24001010403_cat_desc">重温90年代流金岁月</div>
+        </div>
+        <div class="fxc_24001010403_cat_card">
+            <div class="fxc_24001010403_cat_name">伤感</div>
+            <div class="fxc_24001010403_cat_desc">藏在歌词里的伤感心事</div>
+        </div>
+    </div>
+</section>
+
+
+<!-- =========网页元素3：经典老歌列表（保留灌篮高手，修复图片失效）========= -->
+<section class="fxc_24001010403_old">
+    <div class="fxc_24001010403_tab_bar">
+        <div class="fxc_24001010403_tab_item active">推荐</div>
+        <div class="fxc_24001010403_tab_item">伤感</div>
+        <div class="fxc_24001010403_tab_item">情歌</div>
+        <div class="fxc_24001010403_tab_item">金曲</div>
+        <div class="fxc_24001010403_tab_item">粤语</div>
+    </div>
+
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1041/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">梦醒时分</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">原唱：陈淑桦 · 10年前朋友8</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1042/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">快乐星猫</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">原唱：牛奶咖啡 · 越长大越孤单</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1043/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">世界が終るまでは…(直到世界尽头)</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">Jack · 拼好歌(2.0版)</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1044/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">没那么简单</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">原唱：黄小琥 · 简单不简单</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1045/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">我的未来式</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">原唱：郭采洁 · 隐形超人</div>
+        </div>
+    </div>
+    <!-- 灌篮高手，更换图片id=1050，解决图片加载失败 -->
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1050/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">灌篮高手 好想大声说喜欢你</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">SUONY MUSIC · 游戏 动漫</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1047/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">求佛</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis">原唱：誓言 · 誓言专辑</div>
+        </div>
+    </div>
+    <div class="fxc_24001010403_song_item">
+        <img class="fxc_24001010403_song_cover" src="https://picsum.photos/id/1048/60/60" alt="歌曲封面">
+        <div class="fxc_24001010403_song_text">
+            <div class="fxc_24001010403_song_title text-ellipsis">凡人歌</div>
+            <div class="fxc_24001010403_song_sub text-ellipsis"></div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
