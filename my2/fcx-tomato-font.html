@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄音乐 - 找歌页（字体图标版）</title>
+    <!-- 引入字体图标样式 -->
+    <link rel="stylesheet" href="./iconfont.css">
+    <style>
+        /* ============ 全局 CSS（类名含姓名缩写 fcx，无 id 选择器） ============ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #121212;
+            color: #e8e8e8;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding-bottom: 118px; /* 为底部播放栏+导航留出空间 */
+        }
+
+        /* 顶部搜索栏 */
+        .fcx-header {
+            padding: 12px 14px 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .fcx-logo {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ff6b3d, #e6302c);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: #fff;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .fcx-search {
+            flex: 1;
+            height: 34px;
+            background: #1d1d1d;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            color: #8a8a8a;
+            font-size: 13px;
+        }
+        .fcx-header-btn {
+            font-size: 12px;
+            color: #ff6b3d;
+            flex-shrink: 0;
+        }
+
+        /* 顶部标签导航 */
+        .fcx-tags {
+            display: flex;
+            gap: 18px;
+            padding: 10px 16px 4px;
+            overflow-x: auto;
+            font-size: 15px;
+        }
+        .fcx-tags span {
+            color: #8a8a8a;
+            white-space: nowrap;
+            padding-bottom: 4px;
+        }
+        .fcx-tags span.fcx-tag-active {
+            color: #ff6b3d;
+            font-weight: 700;
+            border-bottom: 2px solid #ff6b3d;
+        }
+
+        /* 歌单分类卡片网格 */
+        .fcx-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 12px 16px;
+        }
+        .fcx-card {
+            border-radius: 12px;
+            padding: 14px 14px 12px;
+            min-height: 96px;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        .fcx-card .fcx-card-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .fcx-card .fcx-card-desc {
+            font-size: 12px;
+            margin-top: 6px;
+            opacity: .85;
+        }
+        /* 各卡片风格渐变背景 */
+        .fcx-card-c1 { background: linear-gradient(135deg, #7b2ff7, #c471ed); }
+        .fcx-card-c2 { background: linear-gradient(135deg, #6b4226, #b98a5e); }
+        .fcx-card-c3 { background: linear-gradient(135deg, #0f4c75, #3282b8); }
+        .fcx-card-c4 { background: linear-gradient(135deg, #e6302c, #ff6b3d); }
+        .fcx-card-c5 { background: linear-gradient(135deg, #1b1b3a, #4a4e69); }
+        .fcx-card-c6 { background: linear-gradient(135deg, #1d3557, #457b9d); }
+        .fcx-card-c7 { background: linear-gradient(135deg, #3a0ca3, #7209b7); }
+        .fcx-card-c8 { background: linear-gradient(135deg, #b8860b, #ffd700); }
+        .fcx-card-c9 { background: linear-gradient(135deg, #2b2d42, #8d99ae); }
+        .fcx-card-c10 { background: linear-gradient(135deg, #5f0f40, #9a031e); }
+
+        /* 底部播放栏 */
+        .fcx-player {
+            position: fixed;
+            bottom: 64px;
+            left: 0;
+            width: 100%;
+            height: 56px;
+            background: #1d1d1d;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 10px;
+            z-index: 90;
+        }
+        .fcx-player-name {
+            flex: 1;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .fcx-player-btn {
+            color: #e8e8e8;
+            font-size: 20px;
+        }
+
+        /* ============ 底部导航栏（字体图标版） ============ */
+        .fcx-tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            display: flex;          /* 弹性布局：导航项自适应平分宽度 */
+            align-items: stretch;
+            z-index: 100;
+        }
+        .fcx-tab-item {
+            flex: 1;                /* 每个导航项均分容器宽度 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: #8a8a8a;
+            text-decoration: none;
+        }
+        /* 字体图标：用 font-size 控制大小、color 控制颜色 */
+        .fcx-tab-item .fcx-iconfont {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .fcx-tab-name {
+            font-size: 11px;
+            line-height: 1;
+        }
+        /* 选中状态：番茄橙红色 */
+        .fcx-tab-item.fcx-active {
+            color: #ff6b3d;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部搜索栏 -->
+    <div class="fcx-header">
+        <div class="fcx-logo">番</div>
+        <div class="fcx-search">搜索歌曲、歌手、专辑</div>
+        <span class="fcx-header-btn">识曲 | 分类</span>
+    </div>
+
+    <!-- 顶部标签导航 -->
+    <div class="fcx-tags">
+        <span>推荐</span>
+        <span>音乐</span>
+        <span class="fcx-tag-active">找歌</span>
+        <span>短剧</span>
+        <span>听书</span>
+        <span>视频</span>
+    </div>
+
+    <!-- 歌单分类卡片网格 -->
+    <div class="fcx-grid">
+        <div class="fcx-card fcx-card-c1"><div class="fcx-card-name">二次元音乐</div><div class="fcx-card-desc">用音符连接虚拟与现实</div></div>
+        <div class="fcx-card fcx-card-c2"><div class="fcx-card-name">古风</div><div class="fcx-card-desc">感受东方诗意乐章</div></div>
+        <div class="fcx-card fcx-card-c3"><div class="fcx-card-name">DJ</div><div class="fcx-card-desc">极具节奏感的洗脑神曲</div></div>
+        <div class="fcx-card fcx-card-c4"><div class="fcx-card-name">抖音热门</div><div class="fcx-card-desc">火遍全网的热门歌曲</div></div>
+        <div class="fcx-card fcx-card-c5"><div class="fcx-card-name">00后最爱</div><div class="fcx-card-desc">00后专属新生代潮流音乐</div></div>
+        <div class="fcx-card fcx-card-c6"><div class="fcx-card-name">英语</div><div class="fcx-card-desc">超热门英文歌曲</div></div>
+        <div class="fcx-card fcx-card-c7"><div class="fcx-card-name">纯音乐</div><div class="fcx-card-desc">耳朵里的温柔旋律</div></div>
+        <div class="fcx-card fcx-card-c8"><div class="fcx-card-name">金曲</div><div class="fcx-card-desc">永不过时的经典之声</div></div>
+        <div class="fcx-card fcx-card-c9"><div class="fcx-card-name">伤感</div><div class="fcx-card-desc">藏在歌词里的伤感心事</div></div>
+        <div class="fcx-card fcx-card-c10"><div class="fcx-card-name">90年代</div><div class="fcx-card-desc">重温90年代流金岁月</div></div>
+    </div>
+
+    <!-- 底部播放栏 -->
+    <div class="fcx-player">
+        <i class="fcx-iconfont" style="font-size:20px;color:#ff6b3d;">&#xe603;</i>
+        <span class="fcx-player-name">新-与天齐 (鼓点版)</span>
+        <i class="fcx-iconfont fcx-player-btn">&#xe602;</i>
+        <i class="fcx-iconfont fcx-player-btn">&#xe601;</i>
+    </div>
+
+    <!-- ============ 底部导航：字体图标（iconfont）实现 ============ -->
+    <nav class="fcx-tabbar">
+        <a href="#" class="fcx-tab-item fcx-active">
+            <i class="fcx-iconfont">&#xe600;</i>
+            <span class="fcx-tab-name">首页</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <i class="fcx-iconfont">&#xe601;</i>
+            <span class="fcx-tab-name">发现音乐</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <i class="fcx-iconfont">&#xe602;</i>
+            <span class="fcx-tab-name">歌单</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <i class="fcx-iconfont">&#xe603;</i>
+            <span class="fcx-tab-name">播放</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <i class="fcx-iconfont">&#xe604;</i>
+            <span class="fcx-tab-name">我的</span>
+        </a>
+    </nav>
+</body>
+</html>

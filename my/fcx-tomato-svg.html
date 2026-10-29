@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄音乐 - 底部导航（SVG矢量图标版）</title>
+    <style>
+        /* ============ 全局 CSS（无 id 选择器，类名含姓名缩写 fcx） ============ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #121212;
+            color: #e8e8e8;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding-bottom: 64px;
+        }
+
+        .fcx-header {
+            padding: 14px 16px 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .fcx-logo {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ff6b3d, #e6302c);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .fcx-title {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .fcx-title em {
+            color: #ff6b3d;
+            font-style: normal;
+        }
+
+        .fcx-banner {
+            margin: 12px 16px;
+            height: 130px;
+            border-radius: 14px;
+            background: linear-gradient(120deg, #2b1a16, #3a2a1f 55%, #6b2b1e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffd9c9;
+            letter-spacing: 2px;
+        }
+
+        .fcx-section {
+            padding: 0 16px;
+        }
+        .fcx-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .fcx-rank-list {
+            background: #1d1d1d;
+            border-radius: 12px;
+            padding: 6px 14px;
+        }
+        .fcx-rank-item {
+            display: flex;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+        }
+        .fcx-rank-item:last-child { border-bottom: none; }
+        .fcx-rank-no {
+            width: 30px;
+            font-weight: 700;
+            color: #ff6b3d;
+        }
+        .fcx-rank-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .fcx-rank-singer {
+            color: #8a8a8a;
+            font-size: 12px;
+        }
+
+        /* ============ 底部导航栏（SVG 矢量图标版） ============ */
+        .fcx-tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            align-items: stretch;
+            z-index: 100;
+        }
+        .fcx-tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: #8a8a8a;
+            text-decoration: none;
+        }
+        /* SVG 图标：用 width/height 控制大小，fill: currentColor 配合 color 控制颜色 */
+        .fcx-svg-icon {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+            overflow: hidden;
+        }
+        .fcx-tab-name {
+            font-size: 11px;
+            line-height: 1;
+        }
+        .fcx-tab-item.fcx-active {
+            color: #ff6b3d;
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG symbol 图标定义（iconfont symbol 方式导出的内联图标库） -->
+    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="fcx-icon-home" viewBox="0 0 24 24">
+            <path d="M12 3L2 12h3v8h5v-5h4v5h5v-8h3L12 3z"></path>
+        </symbol>
+        <symbol id="fcx-icon-music" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+        </symbol>
+        <symbol id="fcx-icon-playlist" viewBox="0 0 24 24">
+            <path d="M3 6h13v2H3V6zm0 5h13v2H3v-2zm0 5h8v2H3v-2zm16-6.5l4 3.5-4 3.5V9.5z"></path>
+        </symbol>
+        <symbol id="fcx-icon-play" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"></path>
+        </symbol>
+        <symbol id="fcx-icon-user" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+        </symbol>
+    </svg>
+
+    <!-- 页面头部 -->
+    <div class="fcx-header">
+        <div class="fcx-logo">番</div>
+        <div class="fcx-title"><em>番茄</em>音乐</div>
+    </div>
+
+    <!-- 轮播 -->
+    <div class="fcx-banner">周杰伦《太阳之子》MV上线</div>
+
+    <!-- 热歌榜 -->
+    <div class="fcx-section">
+        <div class="fcx-section-title">热歌榜</div>
+        <div class="fcx-rank-list">
+            <div class="fcx-rank-item"><span class="fcx-rank-no">1</span><span class="fcx-rank-name">不死鸟</span><span class="fcx-rank-singer">霍尊·归一</span></div>
+            <div class="fcx-rank-item"><span class="fcx-rank-no">2</span><span class="fcx-rank-name">问天</span><span class="fcx-rank-singer">江隐尘</span></div>
+            <div class="fcx-rank-item"><span class="fcx-rank-no">3</span><span class="fcx-rank-name">起风了 (live版)</span><span class="fcx-rank-singer">买辣椒也用券</span></div>
+        </div>
+    </div>
+
+    <!-- ============ 底部导航：SVG 矢量图标实现 ============ -->
+    <nav class="fcx-tabbar">
+        <a href="#" class="fcx-tab-item fcx-active">
+            <svg class="fcx-svg-icon" aria-hidden="true"><use xlink:href="#fcx-icon-home"></use></svg>
+            <span class="fcx-tab-name">首页</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <svg class="fcx-svg-icon" aria-hidden="true"><use xlink:href="#fcx-icon-music"></use></svg>
+            <span class="fcx-tab-name">发现音乐</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <svg class="fcx-svg-icon" aria-hidden="true"><use xlink:href="#fcx-icon-playlist"></use></svg>
+            <span class="fcx-tab-name">歌单</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <svg class="fcx-svg-icon" aria-hidden="true"><use xlink:href="#fcx-icon-play"></use></svg>
+            <span class="fcx-tab-name">播放</span>
+        </a>
+        <a href="#" class="fcx-tab-item">
+            <svg class="fcx-svg-icon" aria-hidden="true"><use xlink:href="#fcx-icon-user"></use></svg>
+            <span class="fcx-tab-name">我的</span>
+        </a>
+    </nav>
+</body>
+</html>

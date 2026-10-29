@@ -1,0 +1,27 @@
+/* =========================================
+   iconfont.css —— 字体图标样式表（番茄音乐）
+   作者：冯玺成（fcx）  学号：24001010403
+   来源：iconfont 阿里矢量图标库导出
+   ========================================= */
+
+/* 1. 字体图标声明：把图标字体文件注册为 iconfont */
+@font-face {
+    font-family: "iconfont";
+    src: url("iconfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 2. 全局字体图标基础类 */
+.fcx-iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. 单色图标默认继承父元素颜色，便于用 color 修改 */
+.fcx-iconfont {
+    color: inherit;
+}
