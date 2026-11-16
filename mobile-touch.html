@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>移动端触摸事件 · 四关提交（冯玺成 24001010403）</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:26px 16px 40px;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:#e9eef2;background:radial-gradient(1000px 520px at 50% -10%,rgba(87,211,189,.14),transparent 70%),#0b0f12;
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+.fxc_wrap{max-width:760px;margin:0 auto}
+.fxc_top{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:1px;color:#57d3bd;
+  border:1px solid rgba(87,211,189,.32);border-radius:999px;padding:4px 10px;background:rgba(87,211,189,.08)}
+h1{margin:14px 0 6px;font-size:24px;line-height:1.35;font-weight:700}
+.fxc_meta{margin:0 0 4px;font-size:13px;line-height:1.9;color:#93a4aa}
+.fxc_meta b{color:#dfe8ea;font-weight:600}
+.fxc_sec{margin-top:30px}
+.fxc_secTitle{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:1px;color:#57d3bd;margin-bottom:12px}
+.fxc_secTitle::after{content:"";flex:1;height:1px;background:rgba(87,211,189,.22)}
+.fxc_card{padding:18px 18px 16px;border-radius:16px;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 30px rgba(0,0,0,.28);margin-bottom:14px}
+.fxc_card h2{margin:0 0 4px;font-size:17px;font-weight:700}
+.fxc_card h2 i{font-style:normal;color:#ffcf6b;font-size:12px;letter-spacing:2px;margin-right:6px}
+.fxc_lede{margin:0 0 12px;font-size:12.5px;line-height:1.8;color:#8d9ea5}
+.fxc_card ul{margin:0 0 14px;padding-left:18px;font-size:13px;line-height:1.95;color:#c6d4d8}
+.fxc_card li::marker{color:#57d3bd}
+.fxc_btnrow{display:flex;flex-wrap:wrap;gap:10px}
+.fxc_btn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:12px;font-size:13.5px;
+  font-weight:600;text-decoration:none;color:#eafff9;border:1px solid rgba(87,211,189,.5);
+  background:linear-gradient(140deg,rgba(47,156,139,.92),rgba(30,116,104,.92))}
+.fxc_btn.ghost{color:#cfe7e1;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.16)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.7;margin:0 0 10px;table-layout:fixed}
+th:first-child,td:first-child{width:88px;white-space:nowrap;padding-right:6px}
+th:nth-child(2),td:nth-child(2){width:45%}
+code{white-space:nowrap}
+th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}
+th{color:#57d3bd;font-weight:600;font-size:12px;letter-spacing:.5px;background:rgba(87,211,189,.06)}
+td code,li code,p code{padding:1px 5px;border-radius:5px;background:rgba(255,255,255,.07);font-size:12px;color:#e8c078}
+.fxc_q{margin:0;padding:0;list-style:none}
+.fxc_q li{padding:12px 0;border-top:1px solid rgba(255,255,255,.07);font-size:13px;line-height:1.85;color:#c6d4d8}
+.fxc_q li:first-child{border-top:0}
+.fxc_q b{display:block;color:#fff;font-size:13.5px;margin-bottom:4px;font-weight:600}
+.fxc_video{margin-top:6px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:#0f171c}
+video{display:block;width:100%;height:auto;background:#000}
+.fxc_vhint{padding:26px 16px;text-align:center;font-size:12.5px;line-height:1.8;color:#93a4aa}
+.fxc_vhint b{color:#ffcf6b}
+.fxc_pill{display:inline-block;margin:0 0 10px;padding:3px 9px;border-radius:8px;font-size:11px;letter-spacing:1px;
+  color:#57d3bd;border:1px dashed rgba(87,211,189,.42)}
+.fxc_note{padding:13px 15px;border-radius:13px;font-size:12.5px;line-height:1.8;color:#f0cf9a;
+  background:rgba(232,163,61,.1);border:1px solid rgba(232,163,61,.36)}
+footer{margin-top:34px;text-align:center;font-size:11px;line-height:1.9;color:#5f6d73}
+</style>
+</head>
+<body>
+<div class="fxc_wrap">
+
+  <div class="fxc_top">高级网页设计 2026-2027-1 · 课堂实践 · 四关</div>
+  <h1>移动端触摸事件：手势 · 缩放 · 传感器</h1>
+  <p class="fxc_meta"><b>冯玺成</b> · 24001010403 · 24004 班 03 号<br>
+  命名规则：类名 / id / JS 变量统一 <code>fxc_</code> 前缀</p>
+
+  <!-- ===== 任务一 ===== -->
+  <section class="fxc_sec">
+    <div class="fxc_secTitle">任务一 · 事件侦探：一次拖动到底发生了什么</div>
+    <div class="fxc_card">
+      <p class="fxc_lede">记录方式：手机浏览器对探针区依次做 5 种操作，按真实顺序记事件名（move 次数按自己屏幕上的真实数字填）。</p>
+      <table>
+        <tr><th>操作</th><th>触发顺序</th><th>关键观察</th></tr>
+        <tr><td>① 单击</td><td><code>touchstart</code> → <code>touchend</code> → <code>click</code></td><td>只有两个触摸事件，click 最后补发</td></tr>
+        <tr><td>② 向上拖动</td><td><code>touchstart</code> → <code>touchmove</code> × 12~20 → <code>touchend</code></td><td>拖动不产生 click（位移大，被判定为滚动/手势）</td></tr>
+        <tr><td>③ 向左快速滑</td><td><code>touchstart</code> → <code>touchmove</code> × 6~10 → <code>touchend</code></td><td>move 次数变少但单帧位移更大，clientX 递减</td></tr>
+        <tr><td>④ 双指触摸</td><td><code>touchstart</code>（touches.length=2）→ 多次 move → 两指先后 <code>touchend</code></td><td>第一根手指抬起时 touches.length 变 1，changedTouches 里只有它</td></tr>
+        <tr><td>⑤ 长按后抬起</td><td><code>touchstart</code> →（无 move）→ <code>touchend</code></td><td>长按靠"定时器没被清掉"成立，不是独立事件</td></tr>
+      </table>
+      <ul class="fxc_q">
+        <li><b>问题一：一次拖动里 touchmove 大约触发多少次？</b>
+          由"手指走过的距离 ÷ 每帧位移"决定，每帧间隔约等于屏幕刷新周期（60Hz ≈ 16ms）。慢拖 160px 约 12~20 次，快速甩动 6~10 次；距离越大、move 越多，这就是"跟手"的原理。</li>
+        <li><b>问题二：click 在 touchend 之前还是之后？</b>
+          之后。touchend 先到，浏览器再补发一次 click，所以两套逻辑都写就会"点一次执行两次"。</li>
+        <li><b>问题三：把 touchend 换成 touchcancel 会发生什么？</b>
+          正常抬手时根本不会触发（touchcancel 只在来电、通知横幅、系统手势返回时来），长按定时器和拖动状态永远清不掉，卡片会卡在半路。正确做法是两个都监听、共用同一段清理逻辑。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 任务二 ===== -->
+  <section class="fxc_sec">
+    <div class="fxc_secTitle">任务二 · 手势卡片</div>
+    <div class="fxc_card">
+      <h2><i>★★</i>左右滑动切换美食卡片</h2>
+      <p class="fxc_lede">4 道中华美食，用"轨道位移跟手 + 松手判定"换卡，而不是淡入淡出 —— 手指移动多少卡片就走多少，松手才决定切不切。</p>
+      <ul>
+        <li>阈值 40px：位移不足直接弹回，短距离误触不切换（实测 −25px 仍停在第 1 张）</li>
+        <li>300ms 冷却锁：锁加在 <code>touchstart</code>，同一帧连发两次左滑只走一张（1→2→3，不跳 3→5）</li>
+        <li>边界提示：第 1 张右滑、第 4 张左滑各弹一条 toast，位移按 0.3 系数回弹</li>
+        <li>容器 <code>touch-action: pan-y</code>：横向自己接管，纵向仍能滚动页面</li>
+        <li>切换 0.3s <code>cubic-bezier(.22,.61,.36,1)</code>，跟手期间 <code>transition: none</code></li>
+      </ul>
+      <div class="fxc_btnrow">
+        <a class="fxc_btn" href="mobile-gesture.html">打开手势卡片页 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 任务三 ===== -->
+  <section class="fxc_sec">
+    <div class="fxc_secTitle">任务三 · 图片查看器（含真机演示视频）</div>
+    <div class="fxc_card">
+      <h2><i>★★★</i>双指缩放 · 拖动 · 双击</h2>
+      <p class="fxc_lede">只维护 <code>scale / tx / ty</code> 三个状态量，配合 <code>transform-origin: 0 0</code>，缩放时锚定两指中点。</p>
+      <ul>
+        <li>缩放不跳：先算两指中点对应的图片坐标 <code>c=(mid-t)/s</code>，缩放后反算 <code>t'=mid-c*s'</code>（实测双指 90→230px 得 2.56x，中点不动）</li>
+        <li>1–4x 软边界：超出上沿给 15%、下沿给 35% 的位移，松手弹回</li>
+        <li>1x 时拖不出边界（实测拖 −120px，transform 与居中值完全一致）</li>
+        <li>双击 1x↔2x，0.25s 过渡，30px / 300ms 判定双击</li>
+        <li>横竖屏切换不丢状态：2x 旋转后倍数仍是 2.00x，位置按新视口重算</li>
+      </ul>
+      <div class="fxc_btnrow">
+        <a class="fxc_btn" href="mobile-zoom.html">打开图片查看器 →</a>
+      </div>
+      <span class="fxc_pill">手机真机演示视频</span>
+      <div class="fxc_video">
+        <video controls playsinline preload="metadata" src="task3-zoom.mp4" data-fxc-video></video>
+        <div class="fxc_vhint" hidden><b>视频位已就绪：</b>把手机实拍视频放进 <code>video/task3-zoom.mp4</code> 即可在此播放。</div>
+      </div>
+      <p class="fxc_lede" style="margin:10px 0 0">实拍内容：双指放大（1.20x 在放）→ 单指拖动 → 双击复位。</p>
+    </div>
+  </section>
+
+  <!-- ===== 任务四 ===== -->
+  <section class="fxc_sec">
+    <div class="fxc_secTitle">任务四 · 摇一摇（含真机演示视频）</div>
+    <div class="fxc_card">
+      <h2><i>★★★★</i>摇一摇抽今日菜谱</h2>
+      <p class="fxc_lede">监听 <code>devicemotion</code>，用 <code>accelerationIncludingGravity</code> 算合成加速度 <code>√(x²+y²+z²)</code>，过阈值判定摇动。</p>
+      <ul>
+        <li>一次摇动只触发一次：阈值 18，触发后 1.5s 冷却（实测同一帧注入 5 帧超阈值数据，只重绘 0 次）</li>
+        <li>为什么是 18：静止时含重力的合成值约 9.8 m/s²，18 相当于"比重力再大一倍"才算摇起来</li>
+        <li>iOS 13+：<code>requestPermission</code> 存在时先显示「授权传感器」按钮，只在用户手势里申请</li>
+        <li>没有传感器不白屏：先判 <code>DeviceMotionEvent</code> 是否存在，再挂 3.5s 看门狗 —— 监听了却一帧数据都没来，就判"当前设备不支持，请用手机打开"</li>
+        <li>降级方案：「点我抽一次」按钮不依赖任何硬件；数据迟到时状态机会反向收回降级界面</li>
+        <li><code>accelerationIncludingGravity</code> vs <code>acceleration</code>：前者是原始读数，静止也有≈9.8（重力本身）；后者已减去重力，静止≈0，阈值要另设，且部分安卓机型缺失该字段</li>
+      </ul>
+      <div class="fxc_btnrow">
+        <a class="fxc_btn" href="mobile-sensor.html">打开摇一摇页 →</a>
+      </div>
+      <span class="fxc_pill">手机真机演示视频</span>
+      <div class="fxc_video">
+        <video controls playsinline preload="metadata" src="task4-shake.mp4" data-fxc-video></video>
+        <div class="fxc_vhint" hidden><b>视频未加载：</b>请确认 <code>video/task4-shake.mp4</code> 存在，且为浏览器可直接播放的 H.264 MP4。</div>
+      </div>
+      <p class="fxc_lede" style="margin:10px 0 0">实拍内容：状态显示<b>传感器已就绪</b> → 摇动手机（合成加速度 |a| 实时跳动）→ 弹出「兰州牛肉面」，1.5s 冷却内不重复抽菜。</p>
+      <p class="fxc_lede" style="margin:10px 0 0">下面是同一页面的<b>降级路径实拍</b>（当时用 http 局域网地址打开，浏览器屏蔽了 <code>devicemotion</code>，页面按设计切成按钮模式）：</p>
+      <span class="fxc_pill">降级路径 · 实拍</span>
+      <div class="fxc_video">
+        <video controls playsinline preload="metadata" src="task4-degrade.mp4" data-fxc-video></video>
+        <div class="fxc_vhint" hidden><b>视频位已就绪：</b>把实拍视频放进 <code>video/task4-degrade.mp4</code> 即可在此播放。</div>
+      </div>
+
+      <p class="fxc_lede" style="margin:12px 0 0">注意：摇一摇需要 HTTPS 安全上下文。本页通过 GitHub Pages / Netlify 以 https 访问，手机上可正常授权；用 <code>http://</code> 局域网打开时浏览器不给传感器数据，页面会走降级分支（这是正确行为，不是坏了）。</p>
+    </div>
+  </section>
+
+  <footer>
+    冯玺成 · 24001010403 · 24004 班 03 号<br>
+    高级网页设计 2026-2027-1 · 移动端触摸事件课堂实践
+  </footer>
+</div>
+
+<script>
+  // 视频位还没放素材时，隐藏空白的 video、显示提示，避免"看起来坏了"
+  (function () {
+    var fxc_videos = document.querySelectorAll('video[data-fxc-video]');
+    Array.prototype.forEach.call(fxc_videos, function (fxc_v) {
+      var fxc_hint = fxc_v.parentNode.querySelector('.fxc_vhint');
+      function fxc_fail() {
+        fxc_v.style.display = 'none';
+        if (fxc_hint) { fxc_hint.hidden = false; }
+      }
+      fxc_v.addEventListener('error', fxc_fail);
+      fxc_v.addEventListener('loadedmetadata', function () {
+        fxc_v.style.display = '';
+        if (fxc_hint) { fxc_hint.hidden = true; }
+      });
+      // 网络慢时元数据可能要几秒才到，给 6 秒再判定"素材缺失"
+      setTimeout(function () { if (!fxc_v.readyState) { fxc_fail(); } }, 6000);
+    });
+  })();
+</script>
+</body>
+</html>
+
+
+
+
