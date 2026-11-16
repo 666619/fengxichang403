@@ -179,7 +179,12 @@ footer{margin-top:34px;text-align:center;font-size:11px;line-height:1.9;color:#5
         if (fxc_hint) { fxc_hint.hidden = false; }
       }
       fxc_v.addEventListener('error', fxc_fail);
-      setTimeout(function () { if (!fxc_v.readyState) { fxc_fail(); } }, 1200);
+      fxc_v.addEventListener('loadedmetadata', function () {
+        fxc_v.style.display = '';
+        if (fxc_hint) { fxc_hint.hidden = true; }
+      });
+      // 网络慢时元数据可能要几秒才到，给 6 秒再判定"素材缺失"
+      setTimeout(function () { if (!fxc_v.readyState) { fxc_fail(); } }, 6000);
     });
   })();
 </script>
