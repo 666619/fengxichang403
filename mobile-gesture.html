@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- 手机三件套①：视口，不写会整体缩小 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#100d14">
+<title>手势卡片 · 左右滑动切换中华美食</title>
+<!--
+  ============================================================
+  文件：mobile-gesture.html
+  作者：冯玺成
+  学号：24001010403
+  班级：24004 班 03 号
+  日期：2026-11-16
+  任务：任务二 ⭐⭐ 手势卡片：左右滑动切换内容
+  说明：
+    1. 4 道菜，滑动切换，阈值 40px，边界提示，0.3s 过渡，300ms 冷却；
+    2. 卡片容器 touch-action: pan-y —— 只接管横向，纵向滚动仍交给浏览器；
+    3. 类名 / id / JS 变量统一 fxc_ 前缀。
+  ============================================================
+-->
+<style>
+  /* 手机三件套②：全局去掉点击灰块 */
+  * { -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --fxc_bg:      #100d14;
+    --fxc_panel:   #1a1520;
+    --fxc_line:    rgba(255, 255, 255, 0.12);
+    --fxc_text:    #f6f1ea;
+    --fxc_dim:     #a89fae;
+    --fxc_gold:    #e8c078;
+  }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--fxc_bg);
+    color: var(--fxc_text);
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    /* 深色页面底部渐隐，避免大面积死黑 */
+    background-image:
+      radial-gradient(900px 420px at 50% -10%, rgba(232, 192, 120, 0.16), transparent 70%),
+      radial-gradient(700px 380px at 100% 100%, rgba(177, 31, 36, 0.14), transparent 70%);
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    /* 让桌面浏览器也像一个手机 */
+    max-width: 480px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- 顶部标题 ---------- */
+  .fxc_top {
+    padding: 22px 22px 6px;
+  }
+  .fxc_badgeLine {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--fxc_gold);
+    border: 1px solid rgba(232, 192, 120, 0.35);
+    border-radius: 999px;
+    padding: 4px 10px;
+    background: rgba(232, 192, 120, 0.08);
+  }
+  .fxc_dotLive {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--fxc_gold);
+  }
+  .fxc_h1 {
+    margin: 14px 0 4px;
+    font-size: 25px;
+    line-height: 1.24;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .fxc_h1 span { color: var(--fxc_dim); display: block; font-size: 15px; font-weight: 400; margin-top: 6px; letter-spacing: 0; }
+
+  /* ---------- 卡片舞台 ---------- */
+  .fxc_stage {
+    position: relative;
+    padding: 16px 0 0;
+  }
+
+  /* 手机三件套③（局部版）：只接管横向手势，纵向继续滚动 */
+  .fxc_viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    /* iOS 长按不弹系统菜单 */
+    -webkit-touch-callout: none;
+    border-radius: 22px;
+    margin: 0 16px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  }
+
+  .fxc_track {
+    display: flex;
+    will-change: transform;
+    /* 平时不动，切换时才由 JS 打开 transition，避免跟手时被动画拖慢 */
+    transform: translate3d(0, 0, 0);
+  }
+
+  .fxc_card {
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    padding: 26px 24px 24px;
+    min-height: 372px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  /* 卡片上的纹理（径向小圆点 + 高光），纯 CSS，不加图片依赖 */
+  .fxc_card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.22), transparent 42%),
+      radial-gradient(circle at 82% 92%, rgba(0, 0, 0, 0.35), transparent 55%);
+    pointer-events: none;
+  }
+  /* 大号水印序号，制造层次 */
+  .fxc_ghost {
+    position: absolute;
+    right: 14px;
+    top: 2px;
+    font-size: 96px;
+    font-weight: 800;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.10);
+    letter-spacing: -4px;
+    pointer-events: none;
+  }
+
+  .fxc_tag {
+    position: relative;
+    align-self: flex-start;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .fxc_emoji {
+    position: relative;
+    font-size: 54px;
+    line-height: 1;
+    margin: 26px 0 auto 0;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
+  }
+
+  .fxc_name {
+    position: relative;
+    margin: 0 0 8px;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+  }
+  .fxc_desc {
+    position: relative;
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.86);
+    max-width: 92%;
+  }
+  .fxc_meta {
+    position: relative;
+    font-size: 11.5px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.62);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding-top: 12px;
+  }
+
+  /* 4 张卡片各自的渐变背景 */
+  .fxc_card--1 { background: linear-gradient(150deg, #8d1a1a 0%, #b21f1f 45%, #4a0b10 100%); }
+  .fxc_card--2 { background: linear-gradient(150deg, #c2410c 0%, #e8590c 48%, #6b2105 100%); }
+  .fxc_card--3 { background: linear-gradient(150deg, #0b6a5f 0%, #129186 45%, #04352f 100%); }
+  .fxc_card--4 { background: linear-gradient(150deg, #a2144d 0%, #d6336c 46%, #4c0822 100%); }
+
+  /* ---------- 底部指示器 ---------- */
+  .fxc_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px 0;
+    font-size: 12.5px;
+    color: var(--fxc_dim);
+  }
+  .fxc_dots { display: flex; gap: 7px; }
+  .fxc_dots i {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .fxc_dots i.fxc_on { background: var(--fxc_gold); transform: scale(1.35); }
+  .fxc_counter { font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
+
+  /* ---------- 边界提示 toast ---------- */
+  .fxc_toast {
+    position: fixed;
+    left: 50%;
+    bottom: 96px;
+    transform: translate(-50%, 14px);
+    background: rgba(24, 19, 28, 0.95);
+    border: 1px solid rgba(232, 192, 120, 0.45);
+    color: var(--fxc_gold);
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    white-space: nowrap;
+    z-index: 20;
+  }
+  .fxc_toast.fxc_show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- 下方自查清单（用来验证纵向仍可滚动） ---------- */
+  .fxc_panel {
+    margin: 26px 16px 40px;
+    padding: 18px 18px 8px;
+    background: var(--fxc_panel);
+    border: 1px solid var(--fxc_line);
+    border-radius: 18px;
+  }
+  .fxc_panelTitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--fxc_gold);
+    margin-bottom: 12px;
+  }
+  .fxc_item {
+    display: flex;
+    gap: 10px;
+    padding: 11px 0;
+    border-top: 1px solid var(--fxc_line);
+    font-size: 13px;
+    line-height: 1.7;
+    color: #ded5e2;
+  }
+  .fxc_item:first-of-type { border-top: 0; }
+  .fxc_item b { color: #fff; font-weight: 600; }
+  .fxc_num {
+    flex: 0 0 auto;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(232, 192, 120, 0.16);
+    color: var(--fxc_gold);
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+  .fxc_footNote {
+    text-align: center;
+    font-size: 11px;
+    color: #6e6577;
+    padding-bottom: 30px;
+  }
+</style>
+</head>
+<body>
+
+<header class="fxc_top">
+  <div class="fxc_badgeLine"><i class="fxc_dotLive"></i>TOUCH · 任务二 ⭐⭐</div>
+  <h1 class="fxc_h1">中华美食
+    <span>左右滑动换一道菜 · 阈值 40px · 0.3s 过渡</span>
+  </h1>
+</header>
+
+<!-- 卡片舞台：viewport 负责裁剪，track 负责位移 -->
+<section class="fxc_stage">
+  <div class="fxc_viewport" id="fxcViewport">
+    <div class="fxc_track" id="fxcTrack">
+
+      <article class="fxc_card fxc_card--1">
+        <span class="fxc_ghost">01</span>
+        <span class="fxc_tag">京 · 官府菜</span>
+        <div class="fxc_emoji">🦆</div>
+        <h2 class="fxc_name">北京烤鸭</h2>
+        <p class="fxc_desc">挂炉果木烤制，皮脆肉嫩；片鸭讲究一百零八片，片片带皮。荷叶饼抹甜面酱，加葱丝瓜条卷起同食。</p>
+        <div class="fxc_meta">皮脆 · 肉嫩 · 一鸭三吃</div>
+      </article>
+
+      <article class="fxc_card fxc_card--2">
+        <span class="fxc_ghost">02</span>
+        <span class="fxc_tag">川 · 家常味</span>
+        <div class="fxc_emoji">🌶️</div>
+        <h2 class="fxc_name">麻婆豆腐</h2>
+        <p class="fxc_desc">嫩豆腐切方丁，牛肉末炒香，郫县豆瓣与花椒面收尾。麻、辣、烫、香、酥、嫩、鲜、活，八字诀缺一不可。</p>
+        <div class="fxc_meta">麻辣鲜香 · 下饭神器</div>
+      </article>
+
+      <article class="fxc_card fxc_card--3">
+        <span class="fxc_ghost">03</span>
+        <span class="fxc_tag">粤 · 白灼</span>
+        <div class="fxc_emoji">🐔</div>
+        <h2 class="fxc_name">白切鸡</h2>
+        <p class="fxc_desc">整鸡浸熟后立刻过冰水，皮爽肉滑、骨中带血才够嫩。蘸姜葱茸，吃的是鸡本身的鲜甜。</p>
+        <div class="fxc_meta">原味 · 皮爽肉滑</div>
+      </article>
+
+      <article class="fxc_card fxc_card--4">
+        <span class="fxc_ghost">04</span>
+        <span class="fxc_tag">苏 · 松鼠技法</span>
+        <div class="fxc_emoji">🐟</div>
+        <h2 class="fxc_name">松鼠鳜鱼</h2>
+        <p class="fxc_desc">鳜鱼改花刀、拍粉油炸，鱼肉翻卷如松鼠。浇上现熬的番茄糖醋汁，"吱吱"作响，酸甜挂齿。</p>
+        <div class="fxc_meta">外脆里嫩 · 酸甜挂汁</div>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- 底部指示器：圆点 + 第 n/4 张 -->
+  <div class="fxc_bar">
+    <div class="fxc_dots" id="fxcDots"></div>
+    <div class="fxc_counter" id="fxcCounter">第 1/4 张</div>
+  </div>
+</section>
+
+<!-- 边界提示 -->
+<div class="fxc_toast" id="fxcToast">已经是第一张了</div>
+
+<!-- 自查清单：这段内容让页面可以纵向滚动，用来验证 touch-action: pan-y 是否生效 -->
+<section class="fxc_panel">
+  <div class="fxc_panelTitle">自 查 清 单</div>
+  <div class="fxc_item"><i class="fxc_num">1</i><div>短距离误触（&lt; 40px）<b>不切换</b>，手一松卡片弹回原位。</div></div>
+  <div class="fxc_item"><i class="fxc_num">2</i><div>快速连续滑动<b>只走一张</b>：切换后 300ms 冷却锁，锁内不接收新的拖动。</div></div>
+  <div class="fxc_item"><i class="fxc_num">3</i><div>手指在卡片上<b>上下拖动</b>时页面照常滚动 —— 因为容器只写了 <b>touch-action: pan-y</b>。</div></div>
+  <div class="fxc_item"><i class="fxc_num">4</i><div>滑到第一张再往右、或最后一张再往左，出现<b>「已经是第一张 / 最后一张」</b>提示，位移按 0.3 系数回弹。</div></div>
+  <div class="fxc_item"><i class="fxc_num">5</i><div>抬手取的是 <b>changedTouches[0]</b>，手指离开 touches 列表后仍能拿到终点坐标。</div></div>
+</section>
+
+<div class="fxc_footNote">冯玺成 · 24001010403 · 高级网页设计 · 移动端事件</div>
+
+<script>
+/* ============================================================
+ * 手势卡片逻辑
+ * 记起点 → 跟手位移 → 抬手用 changedTouches[0] 算总位移 → 比阈值
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---- 1. 取元素 ---- */
+  var fxc_viewport = document.getElementById('fxcViewport');
+  var fxc_track    = document.getElementById('fxcTrack');
+  var fxc_cards    = fxc_track.getElementsByClassName('fxc_card');
+  var fxc_dotsBox  = document.getElementById('fxcDots');
+  var fxc_counter  = document.getElementById('fxcCounter');
+  var fxc_toast    = document.getElementById('fxcToast');
+
+  /* ---- 2. 常量：阈值与冷却 ---- */
+  var FXC_THRESHOLD = 40;    // 滑动阈值 40px：小于它算误触，不切换
+  var FXC_COOLDOWN  = 300;   // 冷却 300ms：防止一次快速连滑跳两张
+
+  /* ---- 3. 状态变量 ---- */
+  var fxc_total    = fxc_cards.length;  // 总张数
+  var fxc_index    = 0;                 // 当前第几张（从 0 开始）
+  var fxc_vw       = fxc_viewport.clientWidth;  // 单张卡片的宽度
+  var fxc_startX   = 0;                 // 按下时的横向起点
+  var fxc_startY   = 0;                 // 按下时的纵向起点
+  var fxc_dx       = 0;                 // 本次手势的横向位移
+  var fxc_dragging = false;             // 是否正在拖动
+  var fxc_dirLocked = false;            // 是否已判定为"横向手势"
+  var fxc_locked   = false;             // 冷却锁
+  var fxc_toastTimer = null;
+
+  /* ---- 4. 圆点指示器：按张数动态生成 ---- */
+  for (var fxc_i = 0; fxc_i < fxc_total; fxc_i++) {
+    var fxc_dot = document.createElement('i');
+    fxc_dotsBox.appendChild(fxc_dot);
+  }
+
+  /* ---- 5. 把轨道移到第 index 张的位置，dx 是拖动的临时偏移 ---- */
+  function fxc_place(fxc_animate, fxc_offset) {
+    fxc_offset = fxc_offset || 0;
+    // 只有需要动画时才打开 transition，跟手时必须是 none，否则手感发飘
+    fxc_track.style.transition = fxc_animate
+      ? 'transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1)'
+      : 'none';
+    fxc_track.style.transform =
+      'translate3d(' + (-fxc_index * fxc_vw + fxc_offset) + 'px, 0, 0)';
+  }
+
+  /* ---- 6. 更新"第 n/4 张"与圆点 ---- */
+  function fxc_refresh() {
+    fxc_counter.textContent = '第 ' + (fxc_index + 1) + '/' + fxc_total + ' 张';
+    for (var fxc_j = 0; fxc_j < fxc_total; fxc_j++) {
+      fxc_dotsBox.children[fxc_j].className =
+        (fxc_j === fxc_index) ? 'fxc_on' : '';
+    }
+  }
+
+  /* ---- 7. 边界提示 ---- */
+  function fxc_tip(fxc_msg) {
+    fxc_toast.textContent = fxc_msg;
+    fxc_toast.classList.add('fxc_show');
+    clearTimeout(fxc_toastTimer);
+    fxc_toastTimer = setTimeout(function () {
+      fxc_toast.classList.remove('fxc_show');
+    }, 1400);
+  }
+
+  /* ---- 8. 冷却锁：锁定 300ms，期间不接收新的 touchstart ---- */
+  function fxc_lock() {
+    fxc_locked = true;
+    setTimeout(function () { fxc_locked = false; }, FXC_COOLDOWN);
+  }
+
+  /* ---- 9. touchstart：只记起点，不做任何位移 ---- */
+  function fxc_onStart(fxc_e) {
+    // 多指时直接放弃，本页只处理单指横向滑动
+    if (fxc_e.touches.length !== 1) { fxc_dragging = false; return; }
+    // 冷却期内不开始新手势 —— 这是"快速连滑不跳两张"的关键
+    if (fxc_locked) { fxc_dragging = false; return; }
+
+    var fxc_t = fxc_e.touches[0];
+    fxc_startX = fxc_t.clientX;
+    fxc_startY = fxc_t.clientY;
+    fxc_dx     = 0;
+    fxc_dragging  = true;
+    fxc_dirLocked = false;
+    fxc_place(false, 0);          // 立刻关闭动画，准备跟手
+  }
+
+  /* ---- 10. touchmove：先判方向，横向才接管 ---- */
+  function fxc_onMove(fxc_e) {
+    if (!fxc_dragging) { return; }
+
+    // 中途多了一根手指 → 放弃本次滑动，卡片回位
+    if (fxc_e.touches.length > 1) {
+      fxc_dragging = false;
+      fxc_place(true, 0);
+      return;
+    }
+
+    var fxc_t  = fxc_e.touches[0];
+    fxc_dx = fxc_t.clientX - fxc_startX;
+    var fxc_dy = fxc_t.clientY - fxc_startY;
+
+    // 未锁定方向时判断：横向明显大于纵向，才认为这是滑卡片
+    if (!fxc_dirLocked) {
+      if (Math.abs(fxc_dy) > Math.abs(fxc_dx) && Math.abs(fxc_dy) > 10) {
+        return;   // 竖向手势：不接管，让浏览器滚动页面
+      }
+      if (Math.abs(fxc_dx) > 12) {
+        fxc_dirLocked = true;
+      } else {
+        return;   // 位移太小，先不动，避免一点点抖动就晃卡片
+      }
+    }
+
+    // 已判定是横向手势：阻止默认行为，杜绝页面跟着轻微抖动
+    if (fxc_e.cancelable) { fxc_e.preventDefault(); }
+
+    // 边界橡皮筋：第一张继续往右、最后一张继续往左，位移按 0.3 衰减
+    var fxc_edge = 0.3;
+    if ((fxc_index === 0 && fxc_dx > 0) ||
+        (fxc_index === fxc_total - 1 && fxc_dx < 0)) {
+      fxc_dx = fxc_dx * fxc_edge;
+    }
+
+    fxc_place(false, fxc_dx);
+  }
+
+  /* ---- 11. touchend：抬手算总位移，比阈值决定是否翻页 ---- */
+  function fxc_onEnd(fxc_e) {
+    if (!fxc_dragging) { return; }
+    fxc_dragging = false;
+
+    // 抬手时这根手指已经从 touches 里移除，必须用 changedTouches[0]
+    var fxc_t = fxc_e.changedTouches[0];
+    if (!fxc_t) { fxc_place(true, 0); return; }
+
+    // 用抬手坐标重新算一次，避免最后一次 move 没收到的情况
+    var fxc_dxFinal = fxc_t.clientX - fxc_startX;
+
+    // ① 小于阈值 → 视为误触，原地弹回
+    if (Math.abs(fxc_dxFinal) < FXC_THRESHOLD) {
+      fxc_place(true, 0);
+      return;
+    }
+
+    // ② 左滑（dx < 0）→ 下一张；右滑 → 上一张
+    if (fxc_dxFinal < 0) {
+      if (fxc_index < fxc_total - 1) {
+        fxc_index++;
+        fxc_lock();                 // 300ms 冷却
+      } else {
+        fxc_tip('已经是最后一张了');
+      }
+    } else {
+      if (fxc_index > 0) {
+        fxc_index--;
+        fxc_lock();
+      } else {
+        fxc_tip('已经是第一张了');
+      }
+    }
+
+    fxc_place(true, 0);             // 0.3s 过渡归位
+    fxc_refresh();
+  }
+
+  /* ---- 12. touchcancel：被来电 / 手势返回打断时清状态，防止动画卡住 ---- */
+  function fxc_onCancel() {
+    fxc_dragging = false;
+    fxc_dirLocked = false;
+    fxc_dx = 0;
+    fxc_place(true, 0);
+  }
+
+  /* ---- 13. 绑定事件（move 需要 passive:false 才能 preventDefault） ---- */
+  fxc_viewport.addEventListener('touchstart', fxc_onStart, { passive: true });
+  fxc_viewport.addEventListener('touchmove',  fxc_onMove,  { passive: false });
+  fxc_viewport.addEventListener('touchend',   fxc_onEnd,   { passive: true });
+  fxc_viewport.addEventListener('touchcancel', fxc_onCancel, { passive: true });
+
+  /* ---- 14. 横竖屏切换 / 窗口变化：重新量宽度并归位 ---- */
+  window.addEventListener('resize', function () {
+    fxc_vw = fxc_viewport.clientWidth;
+    fxc_place(false, 0);
+  });
+
+  /* ---- 15. 初始化 ---- */
+  fxc_vw = fxc_viewport.clientWidth;
+  fxc_place(false, 0);
+  fxc_refresh();
+})();
+</script>
+</body>
+</html>
