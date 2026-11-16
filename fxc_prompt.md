@@ -132,3 +132,9 @@ prompts.html 添加提示词前后变化效果演示，要能看到变化。如�
 d:\0403\db\db.json 生成图片
 
 ---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+创建技能skill：提交到github，将本项目提交commit并push到 https://github.com/666619/fengxichang403.git ，使用已设置公钥。
+
+---

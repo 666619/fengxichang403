@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- 手机三件套①：视口，不写会整体缩小 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0b10">
+<title>图片查看器 · 双指缩放 + 双击放大 + 拖动</title>
+<!--
+  ============================================================
+  文件：mobile-zoom.html
+  作者：冯玺成
+  学号：24001010403
+  班级：24004 班 03 号
+  日期：2026-11-16
+  任务：任务三 ⭐⭐⭐ 图片查看器（双指缩放 1x~4x / 双击 1x-2x / 放大后拖动）
+  核心思路：所有变换都用 3 个状态量（scale、tx、ty）表示，
+            手指落在哪，就让"那个点下面的像素"不动 —— 这是"缩放不跳"的唯一保证。
+  说明：图片文件 fxc_xiaolongbao.jpg 需与本文档放在同一目录。
+  ============================================================
+-->
+<style>
+  /* 手机三件套②：全局去掉点击灰块 */
+  * { -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    overflow: hidden;              /* 查看器自己接管手势，页面不滚 */
+    background: #0c0b10;
+    color: #f3efe8;
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ---------- 顶栏 ---------- */
+  .fxc_head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, #141019 0%, #0c0b10 100%);
+  }
+  .fxc_headL { display: flex; flex-direction: column; gap: 3px; }
+  .fxc_title { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+  .fxc_sub { font-size: 11px; color: #8f8798; letter-spacing: 1px; }
+  .fxc_reset {
+    border: 1px solid rgba(232, 192, 120, 0.4);
+    background: rgba(232, 192, 120, 0.1);
+    color: #e8c078;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ---------- 舞台：接管一切手势 ---------- */
+  .fxc_stage {
+    position: relative;
+    flex: 1 1 auto;
+    overflow: hidden;              /* 放大后超出的部分被裁掉，不会撑破页面 */
+    touch-action: none;           /* ★ 关键：这块区域的手势归我，浏览器别缩放也别滚动 */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;   /* iOS 长按不弹"存储图像"系统菜单 */
+    background:
+      radial-gradient(600px 320px at 50% 0%, rgba(232, 192, 120, 0.10), transparent 70%),
+      #0c0b10;
+  }
+
+  /* 变换层：transform-origin 必须是左上角 0 0，数学才好算 */
+  .fxc_wrap {
+    position: absolute;
+    left: 0; top: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+    /* 兜底底色：万一图片加载失败也不是一片黑 */
+    background: linear-gradient(160deg, #3a2418, #1b120c);
+  }
+  .fxc_img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;          /* 事件全部由 .fxc_stage 接 */
+  }
+
+  /* ---------- 缩放比例指示器（加分项） ---------- */
+  .fxc_badge {
+    position: absolute;
+    right: 14px; bottom: 14px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    color: #e8c078;
+    background: rgba(14, 11, 18, 0.82);
+    border: 1px solid rgba(232, 192, 120, 0.35);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+
+  /* ---------- 首次提示 ---------- */
+  .fxc_hint {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 76%;
+    max-width: 300px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(16, 13, 20, 0.88);
+    border: 1px solid rgba(232, 192, 120, 0.35);
+    backdrop-filter: blur(8px);
+    text-align: center;
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #ded5e2;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+  .fxc_hint b { color: #e8c078; font-weight: 600; }
+  .fxc_hint.fxc_gone { opacity: 0; transform: translate(-50%, -46%); }
+
+  /* ---------- 底栏操作提示 ---------- */
+  .fxc_foot {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 18px 14px;
+    font-size: 11px;
+    color: #7d7587;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .fxc_foot span { color: #b6adbe; }
+
+  /* 横屏：放开 480px 限制，免得两侧留黑边 */
+  @media (orientation: landscape) and (max-height: 520px) {
+    body { max-width: 100%; }
+    .fxc_head { padding: 8px 16px 7px; }
+    .fxc_title { font-size: 14px; }
+    .fxc_sub { font-size: 10.5px; }
+    .fxc_foot { padding: 6px 16px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="fxc_head">
+  <div class="fxc_headL">
+    <span class="fxc_title">小笼包 · 图片查看器</span>
+    <span class="fxc_sub">双指缩放 1x–4x · 双击 1x/2x · 放大后拖动</span>
+  </div>
+  <button class="fxc_reset" id="fxcReset" type="button">重置 1x</button>
+</header>
+
+<!-- 舞台：overflow:hidden + touch-action:none，手势全由这里接管 -->
+<div class="fxc_stage" id="fxcStage">
+  <div class="fxc_wrap" id="fxcWrap">
+    <img class="fxc_img" id="fxcImg" src="fxc_xiaolongbao.jpg" alt="小笼包大图">
+  </div>
+  <div class="fxc_badge" id="fxcBadge">1.00x</div>
+  <div class="fxc_hint" id="fxcHint">
+    <b>双指缩放请用手机打开</b><br>
+    电脑上可在浏览器设备模式里，按住 <b>Shift</b> 拖拽模拟双指；<br>
+    双击图片可在 <b>1x / 2x</b> 之间切换。
+  </div>
+</div>
+
+<footer class="fxc_foot">
+  <div>冯玺成 · 24001010403</div>
+  <div><span id="fxcGesture">待操作</span></div>
+</footer>
+
+<script>
+/* ============================================================
+ * 图片查看器：缩放 / 拖动 / 双击
+ * 状态量只有三个：fxc_scale（倍数）、fxc_tx / fxc_ty（左上角偏移）
+ * 屏幕坐标 p  →  图片坐标 (p - t) / scale
+ * 图片坐标 c  →  屏幕坐标 c * scale + t
+ * 缩放时先取"基准点对应的图片坐标"，再反算新的 t —— 这个点就不动了。
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---- 1. 元素 ---- */
+  var fxc_stage  = document.getElementById('fxcStage');
+  var fxc_wrap   = document.getElementById('fxcWrap');
+  var fxc_img    = document.getElementById('fxcImg');
+  var fxc_badge  = document.getElementById('fxcBadge');
+  var fxc_hint   = document.getElementById('fxcHint');
+  var fxc_reset  = document.getElementById('fxcReset');
+  var fxc_gestureTag = document.getElementById('fxcGesture');
+
+  /* ---- 2. 常量 ---- */
+  var FXC_MIN  = 1;      // 最小 1x：不缩得比"全图可见"还小
+  var FXC_MAX  = 4;      // 最大 4x
+  var FXC_DBL_MS   = 300;  // 双击间隔上限 300ms
+  var FXC_DBL_DIST = 30;   // 两次点击位置误差 30px 以内
+
+  /* ---- 3. 状态量 ---- */
+  var fxc_scale = 1, fxc_tx = 0, fxc_ty = 0;
+  var fxc_sw = 0, fxc_sh = 0;      // 舞台尺寸
+  var fxc_bw = 0, fxc_bh = 0;      // 图片在 1x 下的显示尺寸（contain 铺满）
+
+  var fxc_mode = 'idle';           // idle | pan | pinch | wait
+  var fxc_ox = 0, fxc_oy = 0;      // 舞台在页面中的左上角（换算局部坐标用）
+
+  /* 单指拖动锚点 */
+  var fxc_dragX = 0, fxc_dragY = 0, fxc_dragTx = 0, fxc_dragTy = 0;
+
+  /* 双指缩放锚点 */
+  var fxc_pDist = 0, fxc_pScale = 1, fxc_pTx = 0, fxc_pTy = 0;
+  var fxc_pMid = { x: 0, y: 0 };
+  var fxc_lastMid = { x: 0, y: 0 };   // 本帧两指中点，松手收阻尼时用它当锚点
+
+  /* 双击判定 */
+  var fxc_lastTap = 0, fxc_tapX = 0, fxc_tapY = 0;
+
+  /* ---- 4. 小工具 ---- */
+  // 两根手指的直线距离（勾股定理，Math.hypot 一步到位）
+  function fxc_dist(fxc_a, fxc_b) {
+    return Math.hypot(fxc_b.clientX - fxc_a.clientX, fxc_b.clientY - fxc_a.clientY);
+  }
+  // 两根手指的中点（局部坐标：减去舞台偏移）
+  function fxc_mid(fxc_a, fxc_b) {
+    return {
+      x: (fxc_a.clientX + fxc_b.clientX) / 2 - fxc_ox,
+      y: (fxc_a.clientY + fxc_b.clientY) / 2 - fxc_oy
+    };
+  }
+  function fxc_clampNum(fxc_v, fxc_min, fxc_max) {
+    return Math.min(fxc_max, Math.max(fxc_min, fxc_v));
+  }
+
+  /* ---- 5. 边界夹紧：放大后不许拖出空白，缩到 1x 自动居中 ---- */
+  function fxc_clamp() {
+    var fxc_w = fxc_bw * fxc_scale;
+    var fxc_h = fxc_bh * fxc_scale;
+
+    if (fxc_w <= fxc_sw) {
+      // 图片比舞台窄：横向强制居中，1x 时就是"不能拖出边界"
+      fxc_tx = (fxc_sw - fxc_w) / 2;
+    } else {
+      fxc_tx = fxc_clampNum(fxc_tx, fxc_sw - fxc_w, 0);
+    }
+
+    if (fxc_h <= fxc_sh) {
+      fxc_ty = (fxc_sh - fxc_h) / 2;
+    } else {
+      fxc_ty = fxc_clampNum(fxc_ty, fxc_sh - fxc_h, 0);
+    }
+  }
+
+  /* ---- 6. 落地渲染：只在需要动画的时候打开 transition ---- */
+  function fxc_apply(fxc_animate) {
+    fxc_wrap.style.transition = fxc_animate ? 'transform 0.25s ease-out' : 'none';
+    fxc_wrap.style.transform =
+      'translate3d(' + fxc_tx + 'px,' + fxc_ty + 'px,0) scale(' + fxc_scale + ')';
+    fxc_badge.textContent = fxc_scale.toFixed(2) + 'x';
+  }
+
+  /* ---- 7. 量尺寸：按 contain 算出 1x 下的显示宽高，再把图居中 ---- */
+  function fxc_measure() {
+    fxc_sw = fxc_stage.clientWidth;
+    fxc_sh = fxc_stage.clientHeight;
+
+    var fxc_rect = fxc_stage.getBoundingClientRect();
+    fxc_ox = fxc_rect.left;
+    fxc_oy = fxc_rect.top;
+
+    var fxc_nw = fxc_img.naturalWidth  || 1200;   // 原图宽
+    var fxc_nh = fxc_img.naturalHeight || 1600;   // 原图高
+    // contain：取"宽/高两个缩放需求里更小的那个"，保证整张图都看得见
+    var fxc_fit = Math.min(fxc_sw / fxc_nw, fxc_sh / fxc_nh);
+
+    fxc_bw = fxc_nw * fxc_fit;
+    fxc_bh = fxc_nh * fxc_fit;
+
+    fxc_wrap.style.width  = fxc_bw + 'px';
+    fxc_wrap.style.height = fxc_bh + 'px';
+
+    fxc_clamp();
+    fxc_apply(false);
+  }
+
+  /* ---- 8. touchstart：分单指 / 双指两条路 ---- */
+  function fxc_onStart(fxc_e) {
+    // 首次触摸时收起提示
+    if (!fxc_hint.classList.contains('fxc_gone')) {
+      fxc_hint.classList.add('fxc_gone');
+    }
+
+    /* --- 双指：记下初始距离、中点、当时的倍数与偏移 --- */
+    if (fxc_e.touches.length >= 2) {
+      var fxc_a = fxc_e.touches[0], fxc_b = fxc_e.touches[1];
+      fxc_mode   = 'pinch';
+      fxc_pDist  = fxc_dist(fxc_a, fxc_b);   // 第一帧距离（分母）
+      fxc_pScale = fxc_scale;                // 第一帧倍数（基准）
+      fxc_pMid   = fxc_mid(fxc_a, fxc_b);    // 第一帧两指中点（缩放基准点）
+      fxc_pTx = fxc_tx;
+      fxc_pTy = fxc_ty;
+      fxc_wrap.style.transition = 'none';    // 跟手过程绝对不能有动画
+      fxc_gestureTag.textContent = '双指缩放中';
+      return;
+    }
+
+    /* --- 单指：先判双击，再当拖动 --- */
+    var fxc_t   = fxc_e.touches[0];
+    var fxc_now = Date.now();
+    var fxc_lx  = fxc_t.clientX - fxc_ox;
+    var fxc_ly  = fxc_t.clientY - fxc_oy;
+
+    var fxc_isDouble =
+      (fxc_now - fxc_lastTap < FXC_DBL_MS) &&
+      Math.abs(fxc_lx - fxc_tapX) < FXC_DBL_DIST &&
+      Math.abs(fxc_ly - fxc_tapY) < FXC_DBL_DIST;
+
+    if (fxc_isDouble) {
+      fxc_lastTap = 0;                 // 重置，避免三击被算成两次双击
+      fxc_mode = 'wait';               // 这一下已被双击消费，不再当拖动
+      fxc_doubleTap(fxc_lx, fxc_ly);
+      return;
+    }
+
+    fxc_lastTap = fxc_now;
+    fxc_tapX = fxc_lx;
+    fxc_tapY = fxc_ly;
+
+    fxc_mode   = 'pan';
+    fxc_dragX  = fxc_t.clientX;
+    fxc_dragY  = fxc_t.clientY;
+    fxc_dragTx = fxc_tx;
+    fxc_dragTy = fxc_ty;
+    fxc_wrap.style.transition = 'none';
+    fxc_gestureTag.textContent = '单指拖动';
+  }
+
+  /* ---- 9. touchmove：双指缩放 / 单指拖动 ---- */
+  function fxc_onMove(fxc_e) {
+    /* 双指缩放：按距离比例算新倍数，并让两指中点下的像素保持不动 */
+    if (fxc_mode === 'pinch') {
+      if (fxc_e.touches.length < 2) { return; }
+      if (fxc_e.cancelable) { fxc_e.preventDefault(); }
+
+      var fxc_a = fxc_e.touches[0], fxc_b = fxc_e.touches[1];
+      var fxc_d   = fxc_dist(fxc_a, fxc_b);              // 本帧两指距离
+      var fxc_mid2 = fxc_mid(fxc_a, fxc_b);              // 本帧两指中点
+      var fxc_raw = fxc_pScale * (fxc_d / fxc_pDist);    // 本帧相对第一帧的倍数
+
+      // 软边界（阻尼）：超出 1~4 只给 15% / 35% 的位移，松手再弹回，手感有"顶住"的感觉
+      var fxc_s = fxc_raw;
+      if (fxc_s > FXC_MAX) { fxc_s = FXC_MAX + (fxc_s - FXC_MAX) * 0.15; }
+      if (fxc_s < FXC_MIN) { fxc_s = FXC_MIN - (FXC_MIN - fxc_s) * 0.35; }
+
+      // ★ 缩放不跳的核心三步：
+      //   ① 第一帧两指中点对应的"图片坐标"
+      var fxc_cx = (fxc_pMid.x - fxc_pTx) / fxc_pScale;
+      var fxc_cy = (fxc_pMid.y - fxc_pTy) / fxc_pScale;
+      //   ② 换成新倍数
+      fxc_scale = fxc_s;
+      //   ③ 让那个图片坐标重新落回"本帧两指中点"：t = mid - c * scale
+      fxc_tx = fxc_mid2.x - fxc_cx * fxc_scale;
+      fxc_ty = fxc_mid2.y - fxc_cy * fxc_scale;
+
+      if (fxc_scale >= FXC_MIN) { fxc_clamp(); }   // 1x 以下不夹紧，允许回弹
+      fxc_lastMid = fxc_mid2;                      // 记下本帧中点，松手时当锚点
+      fxc_apply(false);
+      return;
+    }
+
+    /* 单指拖动：只有 scale > 1 才有意义，1x 时 fxc_clamp 会强制居中 */
+    if (fxc_mode === 'pan') {
+      if (fxc_e.touches.length !== 1) { return; }
+      if (fxc_e.cancelable) { fxc_e.preventDefault(); }
+
+      var fxc_t2 = fxc_e.touches[0];
+      fxc_tx = fxc_dragTx + (fxc_t2.clientX - fxc_dragX);
+      fxc_ty = fxc_dragTy + (fxc_t2.clientY - fxc_dragY);
+
+      fxc_clamp();          // 边拖边夹，手指再怎么拽也不会拖出空白
+      fxc_apply(false);
+      return;
+    }
+  }
+
+  /* ---- 10. touchend：收尾、边界回弹、双指变单指时无缝接力 ---- */
+  function fxc_onEnd(fxc_e) {
+    if (fxc_mode === 'pinch') {
+      // 松手先把软边界收回 1~4（有阻尼的那一小段在这里补上）
+      var fxc_target = fxc_clampNum(fxc_scale, FXC_MIN, FXC_MAX);
+      // 以"本帧两指中点"为锚点，只改倍数、不改基准点 —— 收阻尼时画面不位移
+      var fxc_cx = (fxc_lastMid.x - fxc_tx) / fxc_scale;
+      var fxc_cy = (fxc_lastMid.y - fxc_ty) / fxc_scale;
+
+      fxc_scale = fxc_target;
+      fxc_tx = fxc_lastMid.x - fxc_cx * fxc_scale;
+      fxc_ty = fxc_lastMid.y - fxc_cy * fxc_scale;
+      fxc_clamp();
+      fxc_apply(true);
+
+      // 还有一根手指没抬：直接转成单指拖动，避免"抬手一下跳"
+      if (fxc_e.touches.length === 1) {
+        var fxc_t3 = fxc_e.touches[0];
+        fxc_mode   = 'pan';
+        fxc_dragX  = fxc_t3.clientX;
+        fxc_dragY  = fxc_t3.clientY;
+        fxc_dragTx = fxc_tx;
+        fxc_dragTy = fxc_ty;
+      } else {
+        fxc_mode = 'idle';
+      }
+      return;
+    }
+
+    if (fxc_mode === 'pan' || fxc_mode === 'wait') {
+      fxc_clamp();            // 松手再夹一次：1x 自动居中，2x 停留在边界内
+      fxc_apply(true);
+      fxc_mode = 'idle';
+    }
+  }
+
+  /* ---- 11. touchcancel：来电 / 手势返回打断时清状态 ---- */
+  function fxc_onCancel() {
+    fxc_mode = 'idle';
+    fxc_scale = fxc_clampNum(fxc_scale, FXC_MIN, FXC_MAX);
+    fxc_clamp();
+    fxc_apply(true);
+  }
+
+  /* ---- 12. 双击：1x ↔ 2x，以点击点为基准缩放 ---- */
+  function fxc_doubleTap(fxc_x, fxc_y) {
+    var fxc_target = (fxc_scale > 1.05) ? 1 : 2;   // 用 >1.05 留一点容差
+
+    if (fxc_target === 1) {
+      // 回 1x：直接居中，不需要算基准点
+      fxc_scale = 1;
+      fxc_tx = (fxc_sw - fxc_bw) / 2;
+      fxc_ty = (fxc_sh - fxc_bh) / 2;
+    } else {
+      // 放大到 2x：点击点下面的像素保持不动
+      var fxc_cx = (fxc_x - fxc_tx) / fxc_scale;
+      var fxc_cy = (fxc_y - fxc_ty) / fxc_scale;
+      fxc_scale = fxc_target;
+      fxc_tx = fxc_x - fxc_cx * fxc_scale;
+      fxc_ty = fxc_y - fxc_cy * fxc_scale;
+      fxc_clamp();
+    }
+
+    fxc_apply(true);                               // 0.25s 过渡
+    fxc_gestureTag.textContent = fxc_scale === 1 ? '双击还原 1x' : '双击放大 2x';
+  }
+
+  /* ---- 13. 绑定（move 必须 passive:false，否则 preventDefault 失效） ---- */
+  fxc_stage.addEventListener('touchstart',  fxc_onStart,  { passive: true });
+  fxc_stage.addEventListener('touchmove',   fxc_onMove,   { passive: false });
+  fxc_stage.addEventListener('touchend',    fxc_onEnd,    { passive: true });
+  fxc_stage.addEventListener('touchcancel', fxc_onCancel, { passive: true });
+
+  // 重置按钮（桌面上测试也方便）
+  fxc_reset.addEventListener('click', function () {
+    fxc_scale = 1;
+    fxc_tx = (fxc_sw - fxc_bw) / 2;
+    fxc_ty = (fxc_sh - fxc_bh) / 2;
+    fxc_apply(true);
+    fxc_gestureTag.textContent = '已重置 1x';
+  });
+
+  /* ---- 14. 横竖屏切换：尺寸重算，状态不丢（倍数与位置都还在） ---- */
+  function fxc_onResize() {
+    var fxc_oldW = fxc_sw, fxc_oldH = fxc_sh;
+    fxc_measure();
+    if (fxc_scale > 1 && fxc_oldW && fxc_oldH) {
+      // 视口变了，按比例把偏移换算一下，避免图片"跑到一边去"
+      fxc_tx = fxc_tx * (fxc_sw / fxc_oldW);
+      fxc_ty = fxc_ty * (fxc_sh / fxc_oldH);
+      fxc_clamp();
+      fxc_apply(false);
+    }
+  }
+  window.addEventListener('resize', fxc_onResize);
+  window.addEventListener('orientationchange', function () {
+    setTimeout(fxc_onResize, 260);       // 旋转后尺寸要等一会儿才稳定
+  });
+
+  /* ---- 15. 初始化：等图片加载完再量，否则 naturalWidth 是 0 ---- */
+  if (fxc_img.complete) {
+    fxc_measure();
+  } else {
+    fxc_img.addEventListener('load', fxc_measure);
+  }
+  // 图片读不到时给个文字提示，页面不至于一片空白
+  fxc_img.addEventListener('error', function () {
+    fxc_hint.innerHTML = '<b>图片没加载出来</b><br>请确认 fxc_xiaolongbao.jpg 与本文件在同一目录。';
+    fxc_hint.classList.remove('fxc_gone');
+    fxc_measure();
+  });
+  fxc_measure();
+})();
+</script>
+</body>
+</html>

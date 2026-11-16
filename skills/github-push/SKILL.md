@@ -19,6 +19,7 @@ description: 当用户要求将项目提交并推送到 GitHub 时触发。处�
 - **禁止** bash heredoc（`cat <<'EOF'`）拼接提交信息，PowerShell 无法解析
 - 使用单行 `-m "feat: xxx"` 或多次 `-m "line1" -m "line2"`
 - 首次提交前先建立 `.gitignore`，排除 IDE 目录（`.vscode/`, `.idea/`, `.trae/`）与缓存
+- 打包产物 `*.zip` 不纳入版本库（体积大且可重新生成），交付时另行传输
 
 ## 多远端约定（本项目）
 
