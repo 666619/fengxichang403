@@ -460,6 +460,15 @@
     fxc_degraded = true;
     fxc_setStatus('bad', '当前设备不支持，请用手机打开');
     fxc_alert.hidden = false;
+    // 诊断：非 https（非安全上下文）时浏览器直接屏蔽 devicemotion，
+    // 这跟“设备没有加速度计”是两回事，要在界面上把原因说清楚，别让人误判成坏了
+    if (!window.isSecureContext) {
+      fxc_alert.innerHTML =
+        '<b>当前设备不支持，请用手机打开。</b><br>' +
+        '原因：当前地址不是 <b>https</b>（isSecureContext = false），浏览器会直接屏蔽 devicemotion。' +
+        '安卓 Chrome 可在 <b>chrome://flags</b> 搜索 "insecure"，把本页地址加入 ' +
+        '"Insecure origins treated as secure" 并重启浏览器；iOS 只能用 https 地址打开。';
+    }
     fxc_btnFall.className = 'fxc_btn fxc_btnFallback';
     fxc_btnFall.textContent = '点我抽一次（降级模式）';
     if (fxc_name.textContent === '摇一摇手机') {
