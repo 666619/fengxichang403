@@ -1,0 +1,194 @@
+<!--
+  功能名称: 诗词图文（上图下文）
+  作者: 冯玺成
+  建立时间: 2026-11-12
+  使用模型: DeepSeek-V4.1-Flash
+  功能简介: 通过本地 Node.js 服务器（端口 3004）的 /api/poems 接口
+    动态获取 db.json 中的 poems 数组，逐条渲染「上图 + 下文」卡片。
+    需先在 db 目录下执行 node server.js 启动数据服务。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>诗词图文 · 上图下文</title>
+  <style>
+    :root {
+      --fxc_bg: #F6F2EA;
+      --fxc_ink: #2C2A26;
+      --fxc_dim: #8A8376;
+      --fxc_card: #FFFDF7;
+      --fxc_line: #E7E1D2;
+      --fxc_accent: #8C3A2A;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--fxc_bg);
+      color: var(--fxc_ink);
+      font-family: "PingFang SC", "Microsoft YaHei", "Songti SC", serif;
+      padding: 48px 20px 64px;
+      line-height: 1.8;
+    }
+    .fxc_page { max-width: 720px; margin: 0 auto; }
+
+    /* 页面标题 */
+    .fxc_head { margin-bottom: 40px; text-align: center; }
+    .fxc_head h1 {
+      font-family: Georgia, "Songti SC", serif;
+      font-size: 30px;
+      font-weight: 400;
+      letter-spacing: .12em;
+    }
+    .fxc_head p { color: var(--fxc_dim); font-size: 13px; margin-top: 10px; letter-spacing: .1em; }
+
+    /* 卡片列表 */
+    .fxc_list { display: flex; flex-direction: column; gap: 32px; }
+
+    /* 单张卡片：上图下文 */
+    .fxc_card {
+      background: var(--fxc_card);
+      border: 1px solid var(--fxc_line);
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(44,42,38,.06);
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .fxc_card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 36px rgba(44,42,38,.1);
+    }
+
+    /* 上图 */
+    .fxc_fig {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #EDE7D9;
+    }
+    .fxc_img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .6s ease;
+    }
+    .fxc_card:hover .fxc_img { transform: scale(1.03); }
+
+    /* 下文 */
+    .fxc_body { padding: 22px 26px 26px; }
+    .fxc_title {
+      font-family: Georgia, "Songti SC", serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--fxc_accent);
+      border-left: 3px solid var(--fxc_accent);
+      padding-left: 12px;
+      margin-bottom: 12px;
+    }
+    .fxc_content {
+      color: var(--fxc_ink);
+      font-size: 15px;
+      text-align: justify;
+      text-indent: 2em;
+    }
+
+    /* 状态提示 */
+    .fxc_loading, .fxc_error {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--fxc_dim);
+      font-size: 14px;
+      line-height: 2;
+    }
+    .fxc_error { color: #A94335; }
+
+    /* 页脚 */
+    .fxc_colophon {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--fxc_dim);
+    }
+    .fxc_colophon a {
+      color: var(--fxc_ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--fxc_line);
+    }
+    .fxc_colophon a:hover { border-bottom-color: var(--fxc_ink); }
+
+    @media (max-width: 600px) {
+      .fxc_body { padding: 18px 18px 20px; }
+      .fxc_title { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fxc_page">
+    <header class="fxc_head">
+      <h1>诗 · 图</h1>
+      <p>POEMS FROM LOCAL JSON</p>
+    </header>
+
+    <main id="fxc_main" class="fxc_list">
+      <div class="fxc_loading">正在从 http://localhost:3004/api/poems 获取数据…<br>
+        如未启动服务器，请先在 db 目录执行 <code>node server.js</code>
+      </div>
+    </main>
+
+    <footer class="fxc_colophon">
+      <a href="index.html">返回首页</a>
+    </footer>
+  </div>
+
+  <script>
+    // 数据服务器地址（server.js 默认端口 3004）
+    const fxc_API = 'http://localhost:3004/api/poems';
+    const fxc_main = document.getElementById('fxc_main');
+
+    /**
+     * 根据接口返回的 poems 数组渲染「上图下文」卡片列表。
+     * @param {Array} fxc_poems - db.json 中的 poems 数组，每项含 image / title / content
+     */
+    function fxc_renderPoems(fxc_poems) {
+      if (!Array.isArray(fxc_poems) || fxc_poems.length === 0) {
+        fxc_main.innerHTML = '<div class="fxc_error">db.json 中暂无 poems 数据。</div>';
+        return;
+      }
+      fxc_main.innerHTML = fxc_poems.map(p => `
+        <article class="fxc_card">
+          <figure class="fxc_fig">
+            <img class="fxc_img"
+                 src="http://localhost:3004/${p.image}"
+                 alt="${p.title}"
+                 loading="lazy"
+                 onerror="this.style.background='#EDE7D9';this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 180%22><rect width=%22300%22 height=%22180%22 fill=%22%23EDE7D9%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2216%22 fill=%22%23999%22 text-anchor=%22middle%22>图片加载失败</text></svg>'">
+          </figure>
+          <div class="fxc_body">
+            <h2 class="fxc_title">${p.title}</h2>
+            <p class="fxc_content">${p.content}</p>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    /**
+     * 启动时 fetch 接口，失败则提示用户。
+     */
+    fetch(fxc_API)
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(json => fxc_renderPoems(json.data || json.poems || []))
+      .catch(err => {
+        fxc_main.innerHTML = `
+          <div class="fxc_error">
+            连接数据服务器失败：${err.message}<br>
+            请确认已在 <code>db/</code> 目录下执行 <code>node server.js</code>，
+            然后刷新本页。
+          </div>`;
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=4f0827e5-524f-402d-bd52-cf760fca3408
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>移动端常用事件 · 触摸手势全解析 · 课堂讲解与任务</title>
+<style>
+  :root{
+    --bg:#f6f4ff;
+    --ink:#221b33;
+    --sub:#6b6478;
+    --v:#7c3aed;
+    --v2:#a78bfa;
+    --o:#f97316;
+    --g:#10b981;
+    --line:#e8e3f6;
+    --red:#e11d48;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    color:var(--ink);line-height:1.8;
+    background:
+      radial-gradient(circle at 10% 4%,rgba(124,58,237,.12) 0,transparent 30%),
+      radial-gradient(circle at 92% 96%,rgba(249,115,22,.12) 0,transparent 30%),
+      var(--bg);
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wy_wrap{max-width:1060px;margin:0 auto;padding:32px 20px 70px}
+
+  .wy_back{
+    display:inline-block;margin-bottom:18px;padding:5px 16px;border-radius:999px;font-size:13px;
+    color:var(--v);text-decoration:none;background:#fff;border:1px solid #ddd3f7;
+  }
+  .wy_back:hover{background:#f3eeff}
+
+  /* ── 头部 ── */
+  .wy_head{text-align:center;padding:10px 8px 26px}
+  .wy_tag{display:inline-block;padding:5px 16px;border-radius:999px;font-size:12px;letter-spacing:3px;
+    color:var(--v);background:#fff;border:1.5px solid #d9cdfa;margin-bottom:16px}
+  .wy_head h1{font-size:clamp(26px,4.4vw,38px);line-height:1.35}
+  .wy_head h1 b{color:var(--v)}
+  .wy_head p{margin-top:12px;color:var(--sub);font-size:14.5px;max-width:660px;margin-left:auto;margin-right:auto}
+  .wy_head .wy_hint{margin-top:14px;font-size:12.5px;color:#8b8497}
+  .wy_head .wy_hint code{background:#fff;border:1px solid var(--line);color:var(--v)}
+
+  /* ── 章节 ── */
+  .wy_sec{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:22px;
+    box-shadow:0 6px 22px rgba(52,32,100,.05);overflow:hidden}
+  .wy_sec > h2{font-size:18px;padding:15px 20px;border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,#faf8ff,#fff);display:flex;align-items:center;gap:10px}
+  .wy_sec > h2 .wy_no{flex:none;width:28px;height:28px;border-radius:8px;background:var(--v);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px}
+  .wy_sec > h2 small{margin-left:auto;font-weight:normal;color:#a49cb5;font-size:12.5px}
+  .wy_body{padding:18px 20px 22px}
+  .wy_body p{font-size:14px;color:#3c3550;margin-bottom:10px}
+  .wy_body b{color:var(--ink)}
+  .wy_body ul,.wy_body ol{margin:6px 0 12px 22px;font-size:14px;color:#3c3550}
+  .wy_body li{margin-bottom:5px}
+  code{font-family:Consolas,"Courier New",monospace;background:#f1edff;color:#5b21b6;
+    padding:1px 6px;border-radius:5px;font-size:13px}
+
+  /* 提示框 */
+  .wy_note{border-left:4px solid var(--v);background:#f6f2ff;border-radius:0 10px 10px 0;
+    padding:11px 15px;font-size:13.5px;color:#3b3550;margin:12px 0}
+  .wy_note b{color:var(--v)}
+  .wy_warn{border-left-color:var(--o);background:#fff8f1;color:#7c3a12}
+  .wy_warn b{color:#c2410c}
+  .wy_ok{border-left-color:var(--g);background:#f1fcf7;color:#155e40}
+  .wy_ok b{color:#059669}
+
+  /* 表格 */
+  .wy_tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+  .wy_tbl th,.wy_tbl td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  .wy_tbl th{background:#f7f3ff;color:#4c1d95}
+  .wy_tbl td code{font-size:12.5px}
+
+  /* 代码块 */
+  .wy_code{position:relative;margin:12px 0}
+  .wy_code .wy_cp{position:absolute;right:9px;top:9px;background:#ede7ff;color:#5b21b6;
+    border:1px solid #d9cdfa;border-radius:7px;font-size:12px;padding:3px 10px;cursor:pointer;font-family:inherit}
+  .wy_code .wy_cp:hover{background:#e3d9ff}
+  .wy_code pre{background:#faf8ff;border:1px solid #e9e2fb;border-radius:10px;padding:34px 15px 13px;
+    font-family:Consolas,monospace;font-size:13px;line-height:1.85;white-space:pre-wrap;word-break:break-word;color:#332b45}
+  .wy_cm{color:#8b83a0}
+  .wy_kw{color:#9333ea}
+  .wy_str{color:#0f766e}
+  .wy_num{color:#c2410c}
+  .wy_fn{color:#1d4ed8}
+
+  /* ── 演示台 ── */
+  .wy_demo{background:#0f0b1a;border-radius:14px;padding:16px;color:#e9e4f7;margin:14px 0}
+  .wy_demo-t{font-size:13px;color:#b7a9dd;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .wy_demo-t b{color:#fff;font-size:13.5px}
+  .wy_demo-t .wy_badge{font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(167,139,250,.18);color:#c4b5fd}
+  .wy_pad{
+    height:180px;border-radius:12px;border:1.5px dashed rgba(167,139,250,.45);
+    background:radial-gradient(circle at 30% 30%,rgba(124,58,237,.28),transparent 60%),#151022;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:13px;color:#b9aed6;user-select:none;touch-action:none;cursor:grab;
+  }
+  .wy_pad:active{cursor:grabbing}
+  .wy_log{
+    margin-top:10px;background:#0a0714;border-radius:10px;padding:10px 12px;
+    font-family:Consolas,monospace;font-size:12px;line-height:1.9;color:#9fe8c8;
+    max-height:150px;overflow:auto;
+  }
+  .wy_log .wy_ev{color:#fcd34d}
+  .wy_log .wy_dim{color:#6f6a85}
+  .wy_dir{
+    margin-top:10px;font-size:14px;color:#fff;text-align:center;min-height:28px;
+    letter-spacing:2px;
+  }
+  .wy_dir b{color:#fcd34d}
+
+  /* ── 任务卡 ── */
+  .wy_task{border:1px solid var(--line);border-radius:14px;margin:16px 0;overflow:hidden;background:#fff}
+  .wy_task-h{display:flex;align-items:center;gap:10px;padding:12px 16px;
+    background:linear-gradient(90deg,#fbf9ff,#fff);border-bottom:1px dashed var(--line);flex-wrap:wrap}
+  .wy_task-h .wy_lv{font-size:11.5px;padding:2px 9px;border-radius:999px;color:#fff;background:var(--v)}
+  .wy_task-h b{font-size:15px}
+  .wy_task-h .wy_dim{font-size:11.5px;color:#948ca6;margin-left:auto}
+  .wy_task-b{padding:14px 16px 16px}
+  .wy_task-b p{font-size:13.5px;margin-bottom:8px}
+  .wy_task-b .wy_lb{display:inline-block;font-size:12px;color:#fff;background:var(--o);
+    border-radius:5px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+  .wy_task-b .wy_lb.wy_lb2{background:#0ea5e9}
+  .wy_task-b .wy_lb.wy_lb3{background:#059669}
+  .wy_lv2{background:#0ea5e9!important}
+  .wy_lv3{background:#f97316!important}
+  .wy_lv4{background:#e11d48!important}
+
+  /* 提示词框 */
+  .wy_pbox{position:relative;margin:10px 0}
+  .wy_pbox .wy_cp{position:absolute;right:9px;top:9px;background:var(--v);color:#fff;border:none;
+    border-radius:7px;font-size:12px;padding:4px 11px;cursor:pointer;font-family:inherit}
+  .wy_pbox .wy_cp:hover{background:#6d28d9}
+  .wy_pbox pre{background:#1b1330;color:#e6ddfb;border-radius:11px;padding:40px 15px 14px;
+    font-family:Consolas,monospace;font-size:12.8px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
+  .wy_pbox pre .wy_red{color:#ff8fa8;font-weight:bold;background:rgba(255,143,168,.13);border-radius:4px;padding:1px 4px}
+  .wy_legend{font-size:12px;color:#8b8497;margin-top:6px}
+  .wy_legend .wy_red{color:#d81b52;font-weight:bold}
+
+  /* 评分表 */
+  .wy_score{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  .wy_score th,.wy_score td{border:1px solid var(--line);padding:8px 10px}
+  .wy_score th{background:#f7f3ff;color:#4c1d95}
+
+  footer{text-align:center;color:#a49cb5;font-size:12.5px;line-height:2;margin-top:32px}
+
+  @media(max-width:620px){
+    .wy_body{padding:15px 15px 18px}
+    .wy_sec > h2{font-size:16px;padding:13px 15px}
+    .wy_sec > h2 small{display:none}
+    .wy_tbl{font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wy_wrap">
+
+  <a class="wy_back" href="/">← 返回课堂实践中心</a>
+
+  <header class="wy_head">
+    <span class="wy_tag">移 动 端 · 触 摸 交 互</span>
+    <h1>按下 · 滑动 · 缩放<br>移动端常用<b>触摸事件</b>怎么用</h1>
+    <p>手机上用户用的是手指——按下、滑动、长按、双指缩放、摇一摇。
+    这节课把触摸事件讲清、演示透，再用 4 个递进任务把它练熟。</p>
+    <div class="wy_hint">📱 本页演示全部基于 <code>touch</code> 触摸事件，<b>请用手机打开</b>；
+    没有手机时，可用浏览器的设备模式大致体验单指操作。</div>
+  </header>
+
+  <!-- 1 为什么需要移动端事件 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">1</span>手机上最容易踩的四个坑<small>先避坑，再动手</small></h2>
+    <div class="wy_body">
+      <table class="wy_tbl">
+        <tbody><tr><th style="width:24%">写出来的现象</th><th style="width:38%">真正的原因</th><th>正确做法</th></tr>
+        <tr>
+          <td>按钮点一下变色，之后就一直是那个颜色</td>
+          <td>用了 <code>:hover</code>。手指没有"悬停"，触摸后状态不会自动撤销</td>
+          <td>改用 <code>:active</code>，或只在 <code>@media (hover:hover)</code> 里写 hover</td>
+        </tr>
+        <tr>
+          <td>点击按钮反应慢半拍</td>
+          <td>浏览器在等"是不是双击"，历史上会等 300ms</td>
+          <td>加 <code>touch-action: manipulation</code>，或直接用 touch 事件自己处理</td>
+        </tr>
+        <tr>
+          <td>拖动卡片时整个页面跟着上下滚</td>
+          <td>浏览器把手势优先给了页面滚动</td>
+          <td>容器加 <code>touch-action: none</code>（要接管手势）或 <code>pan-y</code>（只接管横向）</td>
+        </tr>
+        <tr>
+          <td>想判断"往哪滑、几根手指"，完全拿不到</td>
+          <td>只监听了 <code>click</code>，它只告诉你"点完了"</td>
+          <td>监听 <code>touchstart / touchmove / touchend</code>，从 <code>touches</code> 里取坐标与数量</td>
+        </tr>
+      </tbody></table>
+      <div class="wy_note">🧠 <b>一句话：</b>手指是"多个触点 + 一段轨迹"。
+      要跟手、要方向、要几根手指——这些都得靠触摸事件。</div>
+      <div class="wy_note wy_warn">⚠️ <b>手机页面必备三件套</b>（少一个都会出怪现象）：
+        <br>① <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> 不写会整体缩小；
+        <br>② <code>-webkit-tap-highlight-color:transparent</code> 去掉点击灰块；
+        <br>③ 要接管手势的容器加 <code>touch-action: none</code>，否则浏览器会先滚动页面。
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 事件模型 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">2</span>四个触摸事件 + TouchList 对象<small>核心模型</small></h2>
+    <div class="wy_body">
+      <table class="wy_tbl">
+        <tbody><tr><th style="width:22%">事件</th><th>什么时候触发</th><th style="width:38%">典型用途</th></tr>
+        <tr><td><code>touchstart</code></td><td>手指刚按下</td><td>记录起点、开始长按计时</td></tr>
+        <tr><td><code>touchmove</code></td><td>手指在屏幕上移动（会连续触发很多次）</td><td>跟手拖动、画板、判断方向</td></tr>
+        <tr><td><code>touchend</code></td><td>手指抬起</td><td>计算滑动距离与速度，决定是否翻页</td></tr>
+        <tr><td><code>touchcancel</code></td><td>被系统打断（来电、消息横幅、手势返回）</td><td>清理状态，避免"卡住"</td></tr>
+      </tbody></table>
+      <p>事件对象里最关键的是 <code>touches</code>、<code>targetTouches</code>、<code>changedTouches</code> 三个列表：</p>
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre>pad.addEventListener(<span class="wy_str">'touchstart'</span>, <span class="wy_kw">function</span> (e) {
+  <span class="wy_cm">// touches：屏幕上所有手指（含其他元素上的）</span>
+  <span class="wy_cm">// targetTouches：只在当前元素上的手指</span>
+  <span class="wy_cm">// changedTouches：本次事件"变化"的手指（抬手时从 touches 里消失的就是它）</span>
+  <span class="wy_kw">var</span> t = e.touches[<span class="wy_num">0</span>];          <span class="wy_cm">// 第一根手指</span>
+  <span class="wy_fn">console</span>.log(t.clientX, t.clientY);  <span class="wy_cm">// 相对可视区域</span>
+  <span class="wy_fn">console</span>.log(t.pageX, t.pageY);      <span class="wy_cm">// 相对整个文档（含滚动）</span>
+  <span class="wy_fn">console</span>.log(e.touches.length);     <span class="wy_cm">// 几根手指</span>
+});</pre>
+      </div>
+      <div class="wy_note">🧠 <b>为什么抬手时要用 <code>changedTouches[0]</code>？</b>
+      因为 <code>touchend</code> 触发时，那根手指已经从 <code>touches</code> 里移除了，
+      用 <code>touches[0]</code> 可能拿到别的指头，甚至报 undefined。</div>
+      <div class="wy_note">🧩 <b>为什么不用 click 就够了？</b><code>click</code> 只是"按下并抬起"的结果，
+      拿不到中间过程——拖动时跟不了手、判断不了方向、也分不清几根手指。
+      要做手势，就必须监听 <code>touchstart / touchmove / touchend</code> 这三步。</div>
+    </div>
+  </section>
+
+  <!-- 3 演示：事件顺序 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">3</span>演示一：看清事件触发顺序<small>先观察，再解释</small></h2>
+    <div class="wy_body">
+      <p>在下面这块黑色区域里<b>用手指按一下、拖一拖、再抬起</b>，日志会按真实顺序记录。
+      注意观察：一次拖动会触发多少次 <code>touchmove</code>？<code>click</code> 又在什么时候到来？</p>
+
+      <div class="wy_demo">
+        <div class="wy_demo-t"><b>事件探针</b><span class="wy_badge">请用手机 / 设备模式</span></div>
+        <div class="wy_pad" id="wyPad">用手指在这里按下并拖动<br>（观察下方日志）</div>
+        <div class="wy_log" id="wyLog">
+          <span class="wy_dim">等待你的第一次触摸……</span>
+        </div>
+      </div>
+
+      <div class="wy_note wy_ok">✅ <b>你应该观察到：</b>touchstart → 若干次 touchmove → touchend → 最后才是 click。
+      而且移动距离越大，move 的次数越多——这就是"跟手"的原理。</div>
+      <div class="wy_note wy_warn">⚠️ <code>touchend</code> 之后系统还会补发一次 <code>click</code>。
+      如果两套逻辑都写了，就会出现"点一次执行两次"，记得二选一，或在 touch 处理里 <code>preventDefault()</code>。</div>
+
+      <p><b>看完演示，回到自己的页面——</b>这三件套分别放在哪？
+      </p><p><b>自己写页面时，这三件分别放在哪？</b>它们不在同一个地方：
+      ① 进 <code>&lt;head&gt;</code>，② 进全局 CSS，③ 只加在"要接管手势的那个容器"上。
+      下面是一个可以直接复制开跑的最小骨架：</p>
+
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre><span class="wy_kw">&lt;!DOCTYPE html&gt;</span>
+&lt;html lang=<span class="wy_str">"zh-CN"</span>&gt;
+&lt;head&gt;
+  &lt;meta charset=<span class="wy_str">"UTF-8"</span>&gt;
+
+  <span class="wy_cm">&lt;!-- ① 放 head 里，紧跟 charset --&gt;</span>
+  &lt;meta name=<span class="wy_str">"viewport"</span> content=<span class="wy_str">"width=device-width, initial-scale=1.0"</span>&gt;
+
+  &lt;title&gt;我的手势页面&lt;/title&gt;
+
+  &lt;style&gt;
+    <span class="wy_cm">/* ② 全局去掉点击灰块（iOS / 安卓都认） */</span>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; font-family: "Microsoft YaHei", sans-serif; }
+
+    <span class="wy_cm">/* ③ 只加在要接管手势的容器上，不是加在 body 上 */</span>
+    .wy_pad {
+      height: 180px;
+      background: #151022;
+      touch-action: none;            <span class="wy_cm">/* 这一块的手势归我，浏览器别滚 */</span>
+      user-select: none;             <span class="wy_cm">/* 长按不选中文字 */</span>
+      -webkit-touch-callout: none;   <span class="wy_cm">/* iOS 长按不弹系统菜单 */</span>
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;div class=<span class="wy_str">"wy_pad"</span> id=<span class="wy_str">"wyPad"</span>&gt;在这里滑动&lt;/div&gt;
+
+  &lt;script&gt;
+    <span class="wy_cm">// ④ 事件与 touch-action 配对：容器管手势，页面其他区域照常滚动</span>
+    <span class="wy_kw">var</span> wy_pad = document.getElementById(<span class="wy_str">'wyPad'</span>);
+    <span class="wy_kw">var</span> wy_sx = <span class="wy_num">0</span>;
+
+    wy_pad.addEventListener(<span class="wy_str">'touchstart'</span>, <span class="wy_kw">function</span> (e) {
+      wy_sx = e.touches[<span class="wy_num">0</span>].clientX;
+    }, { passive: <span class="wy_kw">true</span> });
+
+    wy_pad.addEventListener(<span class="wy_str">'touchend'</span>, <span class="wy_kw">function</span> (e) {
+      <span class="wy_kw">var</span> wy_dx = e.changedTouches[<span class="wy_num">0</span>].clientX - wy_sx;
+      <span class="wy_fn">console</span>.log(wy_dx &gt; <span class="wy_num">0</span> ? <span class="wy_str">'向右滑'</span> : <span class="wy_str">'向左滑'</span>);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+      </div>
+
+      <table class="wy_tbl">
+        <tbody><tr><th style="width:22%">写错的位置</th><th>会发生什么</th></tr>
+        <tr><td><code>touch-action:none</code> 加在 <code>body</code> 上</td><td>整个页面都滚不动了，用户无法上下浏览</td></tr>
+        <tr><td>只加了 <code>touch-action</code>，忘了阻止默认行为</td><td>横向滑动时页面仍会上下轻微抖动，手感"发飘"</td></tr>
+        <tr><td>页面上没有任何 <code>touch-action</code></td><td>手指一拖，页面先滚，你的手势代码收到的是断断续续的坐标</td></tr>
+        <tr><td>给所有元素都加 <code>touch-action:none</code></td><td>整页失去滚动，等于把手机页面做成了"死页面"</td></tr>
+      </tbody></table>
+      <div class="wy_note">🧠 <b>判断口诀：</b>哪块区域要"自己动手势"，就只给哪块加 <code>touch-action</code>；
+      想让纵向还能滚动，就用 <code>touch-action: pan-y</code>（只接管横向，纵向交给浏览器）。</div>
+    </div>
+  </section>
+
+  <!-- 4 演示：滑动方向 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">4</span>演示二：识别滑动方向<small>手势识别的通用套路</small></h2>
+    <div class="wy_body">
+      <p>在方块上<b>朝四个方向滑动手指</b>，下方会显示方向与距离。核心只有三步：
+      <b>记起点 → 算差值 → 比较绝对值</b>。</p>
+
+      <div class="wy_demo">
+        <div class="wy_demo-t"><b>滑动识别器</b><span class="wy_badge">阈值 30px</span></div>
+        <div class="wy_pad" id="wyDirPad">按住后朝 上 / 下 / 左 / 右 滑</div>
+        <div class="wy_dir" id="wyDirOut">方向：<b>—</b></div>
+      </div>
+
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre><span class="wy_kw">var</span> wy_startX = <span class="wy_num">0</span>, wy_startY = <span class="wy_num">0</span>;
+
+pad.addEventListener(<span class="wy_str">'touchstart'</span>, <span class="wy_kw">function</span> (e) {
+  <span class="wy_kw">var</span> wy_t = e.touches[<span class="wy_num">0</span>];        <span class="wy_cm">// 按下的第一根手指</span>
+  wy_startX = wy_t.clientX;
+  wy_startY = wy_t.clientY;
+}, { passive: <span class="wy_kw">true</span> });
+
+pad.addEventListener(<span class="wy_str">'touchend'</span>, <span class="wy_kw">function</span> (e) {
+  <span class="wy_kw">var</span> wy_t = e.changedTouches[<span class="wy_num">0</span>];   <span class="wy_cm">// 抬手时用它，touches 里已经没这根手指</span>
+  <span class="wy_kw">var</span> wy_dx = wy_t.clientX - wy_startX;   <span class="wy_cm">// 横向位移</span>
+  <span class="wy_kw">var</span> wy_dy = wy_t.clientY - wy_startY;   <span class="wy_cm">// 纵向位移</span>
+  <span class="wy_kw">var</span> wy_line = <span class="wy_num">30</span>;                     <span class="wy_cm">// 阈值：太小会误判成点击</span>
+
+  <span class="wy_kw">if</span> (Math.abs(wy_dx) &lt; wy_line &amp;&amp; Math.abs(wy_dy) &lt; wy_line) {
+    <span class="wy_fn">console</span>.log(<span class="wy_str">'这是一次点击，不算滑动'</span>);
+    <span class="wy_kw">return</span>;
+  }
+
+  <span class="wy_cm">// 谁大听谁的：横向大就是左右，纵向大就是上下</span>
+  <span class="wy_kw">if</span> (Math.abs(wy_dx) &gt; Math.abs(wy_dy)) {
+    <span class="wy_fn">console</span>.log(wy_dx &gt; <span class="wy_num">0</span> ? <span class="wy_str">'向右滑'</span> : <span class="wy_str">'向左滑'</span>);
+  } <span class="wy_kw">else</span> {
+    <span class="wy_fn">console</span>.log(wy_dy &gt; <span class="wy_num">0</span> ? <span class="wy_str">'向下滑'</span> : <span class="wy_str">'向上滑'</span>);
+  }
+});</pre>
+      </div>
+      <div class="wy_note">🧠 <b>为什么要阈值？</b>手指按下去几乎不可能完全不动，几个像素的抖动会被误判成"滑动"。
+      30px 是个经验值，卡片越大可以适当加大。</div>
+      <div class="wy_note">🚀 <b>进阶思路：</b>再加上"滑动速度"就能区分"慢慢拖"和"快速甩"——
+      用 <code>距离 ÷ 时间</code> 计算，很多轮播库就是这样判断"轻扫翻页"的。</div>
+    </div>
+  </section>
+
+  <!-- 5 演示：长按与双击 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">5</span>演示三：长按与双击<small>时间维度的判断</small></h2>
+    <div class="wy_body">
+      <p><b>长按</b>：按下时启动定时器，600ms 内没抬手就算长按；抬手就取消。
+      <b>双击</b>：记录上次点击时间，两次间隔小于 300ms 算双击。</p>
+
+      <div class="wy_demo">
+        <div class="wy_demo-t"><b>长按 / 双击测试区</b><span class="wy_badge">长按 600ms · 双击 300ms</span></div>
+        <div class="wy_pad" id="wyPressPad">长按我（0.6 秒）<br>或者快速点两下</div>
+        <div class="wy_dir" id="wyPressOut">结果：<b>—</b></div>
+      </div>
+
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre><span class="wy_kw">var</span> wy_timer = <span class="wy_kw">null</span>;
+<span class="wy_kw">var</span> wy_lastTap = <span class="wy_num">0</span>;
+
+el.addEventListener(<span class="wy_str">'touchstart'</span>, <span class="wy_kw">function</span> () {
+  wy_timer = setTimeout(<span class="wy_kw">function</span> () {
+    <span class="wy_fn">console</span>.log(<span class="wy_str">'长按触发'</span>);
+  }, <span class="wy_num">600</span>);
+}, { passive: <span class="wy_kw">true</span> });
+
+el.addEventListener(<span class="wy_str">'touchend'</span>, <span class="wy_kw">function</span> () {
+  clearTimeout(wy_timer);                 <span class="wy_cm">// 抬手了，取消长按</span>
+
+  <span class="wy_kw">var</span> wy_now = Date.now();
+  <span class="wy_kw">if</span> (wy_now - wy_lastTap &lt; <span class="wy_num">300</span>) {
+    <span class="wy_fn">console</span>.log(<span class="wy_str">'双击'</span>);
+    wy_lastTap = <span class="wy_num">0</span>;                    <span class="wy_cm">// 重置，避免三击被算成两次双击</span>
+  } <span class="wy_kw">else</span> {
+    wy_lastTap = wy_now;
+  }
+});
+
+<span class="wy_cm">// 被电话、通知打断时也要清理定时器，否则状态会卡住</span>
+el.addEventListener(<span class="wy_str">'touchcancel'</span>, <span class="wy_kw">function</span> () {
+  clearTimeout(wy_timer);
+});</pre>
+      </div>
+      <div class="wy_note wy_warn">⚠️ 长按还会触发系统菜单（选中文字、图片另存）。记得加
+      <code>user-select:none</code> 和 <code>-webkit-touch-callout:none</code>（iOS）。</div>
+    </div>
+  </section>
+
+  <!-- 6 多指 / 设备事件 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">6</span>多指缩放与设备能力事件<small>触摸之外的传感器</small></h2>
+    <div class="wy_body">
+      <p><b>双指缩放</b>的本质是"两指距离的变化"：算出当前两指间距，和上一帧比较，得到缩放比例。
+      下面是完整代码，每一行都标了作用：</p>
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre><span class="wy_cm">// ① 算两根手指之间的直线距离（单位：像素）</span>
+<span class="wy_kw">function</span> <span class="wy_fn">wy_dist</span>(t1, t2) {
+  <span class="wy_cm">// Math.hypot(a, b) 就是勾股定理 √(a² + b²)，比手写 Math.sqrt 更直观</span>
+  <span class="wy_kw">return</span> Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+<span class="wy_cm">// ② 记住"上一帧"的两指距离，用来和当前帧做比较</span>
+<span class="wy_kw">var</span> wy_lastDist = <span class="wy_num">0</span>;
+
+el.addEventListener(<span class="wy_str">'touchmove'</span>, <span class="wy_kw">function</span> (e) {
+  <span class="wy_kw">if</span> (e.touches.length &lt; <span class="wy_num">2</span>) <span class="wy_kw">return</span>;      <span class="wy_cm">// 少于两根手指不处理（单指是拖动）</span>
+
+  <span class="wy_cm">// ③ 取当前两指，算出本帧距离</span>
+  <span class="wy_kw">var</span> wy_d = wy_dist(e.touches[<span class="wy_num">0</span>], e.touches[<span class="wy_num">1</span>]);
+
+  <span class="wy_cm">// ④ 第一帧没有"上一帧"，wy_lastDist 还是 0，先跳过</span>
+  <span class="wy_kw">if</span> (wy_lastDist) {
+    <span class="wy_kw">var</span> wy_scale = wy_d / wy_lastDist;        <span class="wy_cm">// &gt;1 放大，&lt;1 缩小</span>
+    <span class="wy_fn">console</span>.log(<span class="wy_str">'本次缩放比例'</span>, wy_scale.toFixed(<span class="wy_num">2</span>));  <span class="wy_cm">// 保留两位，便于观察</span>
+  }
+
+  <span class="wy_cm">// ⑤ 把本帧距离存下来，下一帧就用它当"上一帧"</span>
+  wy_lastDist = wy_d;
+}, { passive: <span class="wy_kw">false</span> });                    <span class="wy_cm">// 非被动模式，才能 preventDefault 阻止整页缩放</span></pre>
+      </div>
+
+      <p>⚠️ 还要补一句"清场"：手指重新按下时把旧距离清掉，否则第一帧会拿上次的残留数据比较，画面会突然跳一下。</p>
+      <div class="wy_code">
+        <button class="wy_cp">复制</button>
+<pre>el.addEventListener(<span class="wy_str">'touchstart'</span>, <span class="wy_kw">function</span> () {
+  wy_lastDist = <span class="wy_num">0</span>;   <span class="wy_cm">// 新一轮手势开始，清空上一轮的距离</span>
+}, { passive: <span class="wy_kw">true</span> });</pre>
+      </div>
+
+      <table class="wy_tbl">
+        <tbody><tr><th style="width:30%">代码里的关键点</th><th>为什么这么写</th></tr>
+        <tr><td><code>Math.hypot(dx, dy)</code></td><td>直接算两点直线距离，等价于 <code>Math.sqrt(dx*dx + dy*dy)</code>，少写乘法不易错</td></tr>
+        <tr><td><code>clientX / clientY</code></td><td>两指必须用同一套坐标系（都用 client 或都用 page），混用算出的距离会错</td></tr>
+        <tr><td><code>wy_scale &gt; 1</code> 表示放大</td><td>两指间距变大 = 图片被"拉开"了，比例就是本帧相对上一帧的放大倍数</td></tr>
+        <tr><td><code>toFixed(2)</code></td><td>日志里保留两位小数，避免一大串 0.999999 干扰观察</td></tr>
+        <tr><td><code>{ passive: false }</code></td><td>告诉浏览器"我要阻止默认行为"，否则 <code>preventDefault()</code> 会失效并报警告</td></tr>
+        <tr><td><code>wy_scale</code> 是"每帧"的比例</td><td>页面真正要用的"总倍数"要<b>累乘</b>：
+        <code>wy_total = wy_total * wy_scale</code>，并限制在 1～4 倍之间</td></tr>
+      </tbody></table>
+
+      <div class="wy_note wy_warn">⚠️ 只有监听 <code>touchmove</code> 还不够：手势是"一段过程"，实际做查看器时还要在
+      <code>touchstart</code> 记录起点、在 <code>touchend</code> 收尾（松手后判断是否回弹），
+      三件套配齐才算一个完整手势。</div>
+
+      <p>还有三类在作业里很出彩的"设备事件"：</p>
+      <table class="wy_tbl">
+        <tbody><tr><th style="width:30%">事件</th><th>能做什么</th><th style="width:32%">注意点</th></tr>
+        <tr><td><code>orientationchange</code> / <code>resize</code></td><td>横竖屏切换时重排布局或重绘 canvas</td><td>resize 会连续触发，记得防抖</td></tr>
+        <tr><td><code>deviceorientation</code></td><td>陀螺仪：倾斜角度（α β γ），做"水平仪""3D 视差"</td><td>iOS 13+ 必须用户点击后调用 <code>DeviceOrientationEvent.requestPermission()</code></td></tr>
+        <tr><td><code>devicemotion</code></td><td>加速度：摇一摇、计步、晃动检测</td><td>阈值判断 + 冷却时间，否则一次摇动触发十几次</td></tr>
+      </tbody></table>
+      <div class="wy_note wy_warn">⚠️ 传感器事件<b>必须在真机上测</b>，普通电脑浏览器收不到数据。
+      写代码时一定要做"没有传感器"的降级分支，否则就是一片空白。</div>
+    </div>
+  </section>
+
+  <!-- 7 课堂任务 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">7</span>课堂实践任务：4 关递进<small>观察 → 实现 → 综合 → 拓展</small></h2>
+    <div class="wy_body">
+      <p>四个任务分别是不同的能力维度：<b>观察记录</b>、<b>手势实现</b>、<b>综合交互</b>、<b>设备能力 + 排错</b>。
+      允许使用 AI，但每一关都有"必须讲得清"的验收点。</p>
+
+      <!-- 任务一 -->
+      <div class="wy_task">
+        <div class="wy_task-h">
+          <span class="wy_lv">⭐ 任务一</span>
+          <b>事件侦探：一次拖动到底发生了什么</b>
+          <span class="wy_dim">维度：观察 · 记录 · 不写代码</span>
+        </div>
+        <div class="wy_task-b">
+          <p><span class="wy_lb">任务</span>用手机（或 DevTools 设备模式）打开本页，对第 3 节探针区依次做 5 种操作，
+          把事件触发顺序记录到下表：单击 / 向上拖动 / 向左快速滑 / 双指触摸（可选）/ 长按后抬起。</p>
+          <p><span class="wy_lb wy_lb2">验收</span>能回答三个问题：
+          ① 一次拖动里 <code>touchmove</code> 大约触发多少次、和距离有什么关系？
+          ② <code>click</code> 出现在 <code>touchend</code> 之前还是之后？
+          ③ 如果把 <code>touchend</code> 换成 <code>touchcancel</code>，会发生什么？</p>
+          <p><span class="wy_lb wy_lb3">加分</span>把日志里的坐标做成一张"轨迹草图"（手绘即可），说明手指的实际路径。</p>
+        </div>
+      </div>
+
+      <!-- 任务二 -->
+      <div class="wy_task">
+        <div class="wy_task-h">
+          <span class="wy_lv wy_lv2">⭐⭐ 任务二</span>
+          <b>手势卡片：左右滑动切换内容</b>
+          <span class="wy_dim">维度：手势识别 · DOM 操作</span>
+        </div>
+        <div class="wy_task-b">
+          <p><span class="wy_lb">任务</span>做一张"中华美食卡片"，包含 4 道菜。左右滑动时切换到上一道/下一道，
+          滑到第一张再往前滑要有提示；卡片切换带 0.3s 过渡动画。</p>
+          <p><span class="wy_lb wy_lb2">验收</span>① 短距离误触不会切换（阈值生效）；
+          ② 快速连续滑动不会跳两张；③ 手机上拖动时页面不会跟着上下滚动。</p>
+          <div class="wy_pbox">
+            <button class="wy_cp">复制</button>
+<pre>在项目中新建移动端页面 mobile-gesture.html：
+1、页面显示一张美食卡片，共 4 道菜（菜名、简介、渐变背景），底部显示"第 1/4 张"；
+2、监听 touchstart / touchend，用 changedTouches[0] 计算横向位移，阈值 40px；
+3、左滑切到下一张，右滑切到上一张，边界时给出提示文字"已经是第一张/最后一张"；
+4、卡片容器加 touch-action: pan-y，保证纵向还能滚动页面；
+5、切换时加 0.3s 过渡动画，并防止快速连滑一次跳两张（加 300ms 冷却）；
+6、类名、id、JS 变量一律以 <span class="wy_red">wy_</span> 开头，文件头写上姓名学号。</pre>
+            <div class="wy_legend">🔴 按你的命名规则填写前缀；若老师要求不同前缀请替换。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 任务三 -->
+      <div class="wy_task">
+        <div class="wy_task-h">
+          <span class="wy_lv wy_lv3">⭐⭐⭐ 任务三</span>
+          <b>图片查看器：双指缩放 + 双击放大 + 拖动</b>
+          <span class="wy_dim">维度：多指手势 · 变换 · 状态管理</span>
+        </div>
+        <div class="wy_task-b">
+          <p><span class="wy_lb">任务</span>做一张可交互的图片查看器：双指缩放（1x～4x）、双击在 1x/2x 之间切换、
+          放大后可单指拖动查看细节，缩回 1x 自动居中。</p>
+          <p><span class="wy_lb wy_lb2">验收</span>① 缩放以两指中心为基准，图片不会"跳走"；
+          ② 缩放到边界有阻尼或限制；③ 1x 时不能拖出边界；④ 缩放后旋转屏幕不丢失状态。</p>
+          <div class="wy_pbox">
+            <button class="wy_cp">复制</button>
+<pre>在项目中新建 mobile-zoom.html，实现移动端图片查看器：
+1、一张大图放在容器里，容器 overflow:hidden，touch-action:none，user-select:none；
+2、touchstart 记录单指/双指状态与两指初始距离；
+3、touchmove 双指时按距离比例缩放（1～4 倍），以两指中点为缩放基准；
+4、单指且 scale&gt;1 时拖动图片，松手后限制在边界内；
+5、双击在 1x 与 2x 之间切换，带 0.25s 过渡；
+6、页面打开时提示"双指缩放请用手机打开"，所有逻辑写清注释，变量以 <span class="wy_red">wy_</span> 开头；
+7、完成后说明你是如何保证"缩放不跳"的（准备答辩）。</pre>
+            <div class="wy_legend">🔴 按你的命名规则填写前缀。</div>
+          </div>
+          <p><span class="wy_lb wy_lb3">加分</span>加一个"双指旋转"（用 <code>Math.atan2</code> 算角度差），或加缩放比例指示器。</p>
+        </div>
+      </div>
+
+      <!-- 任务四 -->
+      <div class="wy_task">
+        <div class="wy_task-h">
+          <span class="wy_lv wy_lv4">⭐⭐⭐⭐ 任务四</span>
+          <b>摇一摇彩蛋 or 倾斜视差</b>
+          <span class="wy_dim">维度：设备传感器 · 权限 · 降级</span>
+        </div>
+        <div class="wy_task-b">
+          <p><span class="wy_lb">任务</span>二选一：
+          <b>A 摇一摇</b>——连续摇动手机触发"摇出今日菜谱"；
+          <b>B 倾斜视差</b>——手机左右倾斜时，页面元素产生视差位移。</p>
+          <p><span class="wy_lb wy_lb2">验收</span>① 一次摇动只触发一次（有冷却）；
+          ② 在没有加速度传感器的设备上显示"当前设备不支持"，不报错不白屏；
+          ③ iOS 上通过按钮触发权限申请；④ 能讲清 <code>accelerationIncludingGravity</code> 与 <code>acceleration</code> 的区别。</p>
+          <div class="wy_pbox">
+            <button class="wy_cp">复制</button>
+<pre>在项目中新建 mobile-sensor.html，实现"摇一摇"功能：
+1、页面提示"摇一摇手机，抽今日菜谱"，下方显示结果；
+2、监听 devicemotion，取 accelerationIncludingGravity 计算合成加速度；
+3、超过阈值（约 18）判定为摇动，触发后进入 1.5 秒冷却，防止一次摇动重复触发；
+4、随机抽取一道菜显示出来，带简单的弹出动画；
+5、检测不到该事件或没有数据时，显示"当前设备不支持，请用手机打开"，并提供"点我抽一次"的按钮作为降级方案；
+6、变量以 <span class="wy_red">wy_</span> 开头，写明姓名学号，附一段说明：为什么必须做降级。</pre>
+            <div class="wy_legend">🔴 按你的命名规则填写前缀。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wy_note">🧭 <b>提交要求：</b>4 个任务按星级选做（至少完成 ⭐⭐ 两关），
+      提交时附上①运行截图（手机或设备模式）②遇到的一个坑与解决办法 ③本次使用的 AI 提示词记录。</div>
+    </div>
+  </section>
+
+  <!-- 8 评分与答辩 -->
+  <section class="wy_sec">
+    <h2><span class="wy_no">8</span>评分维度与现场答辩<small>不只看得分，更看讲得清</small></h2>
+    <div class="wy_body">
+      <table class="wy_score">
+        <tbody><tr><th style="width:18%">维度</th><th style="width:12%">分值</th><th>评分要点</th></tr>
+        <tr><td>事件理解</td><td>25</td><td>能说出四个触摸事件的触发时机、touches 三个列表的差别、为什么抬手用 changedTouches</td></tr>
+        <tr><td>手势实现</td><td>30</td><td>阈值、方向判断、冷却时间是否合理；边界与误触处理是否到位</td></tr>
+        <tr><td>移动端体验</td><td>20</td><td>是否跟手、有无页面误滚动、是否有过渡动画、横竖屏与不同尺寸是否正常</td></tr>
+        <tr><td>降级与排错</td><td>15</td><td>不支持传感器/无权限时是否有友好提示；控制台无报错</td></tr>
+        <tr><td>规范与记录</td><td>10</td><td>命名前缀、文件头信息、AI 提示词记录、注释是否清晰</td></tr>
+      </tbody></table>
+      <div class="wy_note wy_ok">🎤 <b>现场答辩（随机抽 3 问）：</b>
+        ① 为什么 <code>touchend</code> 里要用 <code>changedTouches[0]</code>？
+        ② 你的滑动阈值设为多少？设成 5px 会怎样？
+        ③ 双指缩放时怎么保证图片不"跳"？
+        ④ 页面加了 <code>touch-action:none</code> 之后发生了什么变化？
+        ⑤ 手机上没有传感器数据时，你的代码会怎么走？</div>
+      <div class="wy_note wy_warn">⚠️ <b>常见扣分点：</b>只监听 click（滑动完全无反应）、
+      不写 touchcancel（接个电话回来状态卡死）、
+      用 hover 做移动端交互、缩放时忘记 <code>preventDefault</code> 导致整页跟着放大。</div>
+    </div>
+  </section>
+
+  <footer>
+    高级网页设计 · 移动端事件课堂案例 · 2026-2027-1<br>
+    手指的"话"比想象中多：按下、移动、抬起、几根手指、往哪走——都要自己接管
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 通用：复制按钮 ── */
+  function wy_done(btn) {
+    btn.textContent = '已复制 ✓';
+    setTimeout(function () { btn.textContent = '复制'; }, 1500);
+  }
+  function wy_fallback(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    wy_done(btn);
+  }
+  document.querySelectorAll('.wy_cp').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var box = btn.parentNode;
+      var pre = box.querySelector('pre');
+      var text = pre.innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          wy_done(btn);
+        }).catch(function () {
+          wy_fallback(text, btn);
+        });
+      } else {
+        wy_fallback(text, btn);
+      }
+    });
+  });
+
+  /* ── 演示一：事件探针 ── */
+  var wy_pad = document.getElementById('wyPad');
+  var wy_log = document.getElementById('wyLog');
+  var wy_count = 0;
+
+  function wy_addLog(name, extra) {
+    if (wy_count === 0) wy_log.innerHTML = '';
+    wy_count++;
+    var t = new Date();
+    var ms = String(t.getMilliseconds()).padStart(3, '0');
+    var line = document.createElement('div');
+    line.innerHTML = '<span class="wy_ev">' + name + '</span>'
+      + '<span class="wy_dim"> · ' + (extra || '') + '</span>';
+    wy_log.appendChild(line);
+    if (wy_log.children.length > 14) wy_log.removeChild(wy_log.firstChild);
+    wy_log.scrollTop = wy_log.scrollHeight;
+  }
+
+  if (wy_pad) {
+    wy_pad.addEventListener('touchstart', function (e) {
+      var t = e.touches[0];
+      wy_addLog('touchstart', 'x=' + Math.round(t.clientX) + ' y=' + Math.round(t.clientY));
+    }, { passive: true });
+
+    wy_pad.addEventListener('touchmove', function (e) {
+      var t = e.touches[0];
+      wy_addLog('touchmove', 'x=' + Math.round(t.clientX) + ' y=' + Math.round(t.clientY));
+    }, { passive: true });
+
+    wy_pad.addEventListener('touchend', function (e) {
+      var t = e.changedTouches[0];
+      wy_addLog('touchend', 'x=' + Math.round(t.clientX) + ' y=' + Math.round(t.clientY));
+    });
+
+    wy_pad.addEventListener('click', function () {
+      wy_addLog('click', '触摸结束之后才补发');
+    });
+  }
+
+  /* ── 演示二：滑动方向 ── */
+  var wy_dirPad = document.getElementById('wyDirPad');
+  var wy_dirOut = document.getElementById('wyDirOut');
+  var wy_sx = 0, wy_sy = 0;
+
+  if (wy_dirPad) {
+    wy_dirPad.addEventListener('touchstart', function (e) {
+      var t = e.touches[0];
+      wy_sx = t.clientX;
+      wy_sy = t.clientY;
+      wy_dirPad.textContent = '起点已记录，继续滑动…';
+    }, { passive: true });
+
+    wy_dirPad.addEventListener('touchend', function (e) {
+      var t = e.changedTouches[0];
+      var wy_dx = t.clientX - wy_sx;
+      var wy_dy = t.clientY - wy_sy;
+      var wy_line = 30;
+      if (Math.abs(wy_dx) < wy_line && Math.abs(wy_dy) < wy_line) {
+        wy_dirOut.innerHTML = '方向：<b>—</b>（位移太小，判定为点击）';
+      } else if (Math.abs(wy_dx) > Math.abs(wy_dy)) {
+        wy_dirOut.innerHTML = '方向：<b>' + (wy_dx > 0 ? '向右滑' : '向左滑')
+          + '</b>　横向位移 ' + Math.round(Math.abs(wy_dx)) + 'px';
+      } else {
+        wy_dirOut.innerHTML = '方向：<b>' + (wy_dy > 0 ? '向下滑' : '向上滑')
+          + '</b>　纵向位移 ' + Math.round(Math.abs(wy_dy)) + 'px';
+      }
+      wy_dirPad.textContent = '再试一次：按住后朝 上 / 下 / 左 / 右 滑';
+    });
+  }
+
+  /* ── 演示三：长按 / 双击 ── */
+  var wy_pressPad = document.getElementById('wyPressPad');
+  var wy_pressOut = document.getElementById('wyPressOut');
+  var wy_pressTimer = null;
+  var wy_lastTap = 0;
+
+  if (wy_pressPad) {
+    wy_pressPad.addEventListener('touchstart', function () {
+      wy_pressOut.innerHTML = '结果：<b>按住中…</b>';
+      wy_pressTimer = setTimeout(function () {
+        wy_pressOut.innerHTML = '结果：<b>长按触发 ✓</b>';
+      }, 600);
+    }, { passive: true });
+
+    wy_pressPad.addEventListener('touchend', function () {
+      clearTimeout(wy_pressTimer);
+      var now = Date.now();
+      if (now - wy_lastTap < 300) {
+        wy_pressOut.innerHTML = '结果：<b>双击 ✓</b>';
+        wy_lastTap = 0;
+      } else {
+        wy_lastTap = now;
+        if (wy_pressOut.innerHTML.indexOf('长按') === -1) {
+          wy_pressOut.innerHTML = '结果：<b>单击</b>（快速再点一次试试双击）';
+        }
+      }
+    });
+
+    wy_pressPad.addEventListener('touchcancel', function () {
+      clearTimeout(wy_pressTimer);
+      wy_pressOut.innerHTML = '结果：<b>触摸被打断</b>';
+    });
+  }
+})();
+</script>
+
+
+<script async="" src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="4f0827e5-524f-402d-bd52-cf760fca3408" data-app-host="app.netlify.com" data-account-tier="free"></script>
+<iframe id="nl-badge-frame" title="Powered by Netlify" srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;dark&quot;&gt;&lt;style&gt;
+    :root{--nl-vw:1280px;--nl-vh:720px}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+    body{display:flex;align-items:flex-end;justify-content:flex-end;height:100vh;
+      padding:8px 18px 18px 8px;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#f4f9f9;-webkit-font-smoothing:antialiased}
+    .nl-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:10px;width:max-content;max-width:calc(var(--nl-vw,100vw) - 26px)}
+    button{font-family:inherit;cursor:pointer}
+    :focus-visible{outline:2px solid #32e6e2;outline-offset:2px;border-radius:6px}
+    .nl-icon-btn{position:relative;flex:none;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid transparent;background:transparent;color:#d5e3e6;transition:background .15s ease,color .15s ease}
+    .nl-icon-btn:hover{background:rgba(255,255,255,0.08);color:#f4f9f9}
+    .nl-tap::after{content:&quot;&quot;;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:max(100%,44px);height:max(100%,44px)}
+    @keyframes nl-rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+  
+      .nl-card{position:relative;display:none;width:min(340px,calc(var(--nl-vw,100vw) - 26px));max-height:calc(var(--nl-vh,100vh) - 84px);overflow-y:auto;background:linear-gradient(180deg,#132832 0%,#0e1e25 100%);border:1px solid rgba(255,255,255,0.09);border-radius:18px;padding:18px;transform-origin:bottom right;animation:nl-rise .3s cubic-bezier(.34,1.4,.4,1) both}
+      .nl-card.open{display:block}
+      .nl-card-close{position:absolute;top:10px;right:10px}
+      .nl-card h2{margin:0;padding-right:30px;font-size:16px;font-weight:750;letter-spacing:-0.015em;line-height:1.35}
+      .nl-card h2 em{font-style:normal;background:linear-gradient(90deg,#32e6e2,#4d7cfe,#9a6bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .nl-card p{margin:8px 0 0;font-size:12.5px;color:#d5e3e6}
+      .nl-prompt{position:relative;margin-top:14px;background:#10222b;border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;transition:border-color .15s ease,box-shadow .15s ease}
+      .nl-prompt:focus-within{border-color:#05bdba;box-shadow:0 0 0 3px rgba(5,189,186,0.18)}
+      .nl-prompt textarea{display:block;width:100%;height:38px;resize:none;border:0;outline:none;background:transparent;color:#f4f9f9;font:inherit;font-size:13px;line-height:19px;padding:0 28px 0 0}
+      .nl-prompt textarea::placeholder{color:#a9bdc2}
+      .nl-send{position:absolute;right:9px;bottom:9px;width:24px;height:24px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:#05bdba;color:#02191b;transition:background .15s ease}
+      .nl-send:hover{background:#32e6e2}
+      @media (pointer: coarse){
+        .nl-prompt textarea{font-size:16px;line-height:21px;height:42px}
+      }
+      .nl-or{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a9bdc2}
+      .nl-or::before,.nl-or::after{content:&quot;&quot;;flex:1;height:1px;background:rgba(255,255,255,0.09)}
+      .nl-drop{display:flex;align-items:center;justify-content:space-between;gap:6px;text-decoration:none;background:#1b3a45;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:#cfe0e3;transition:background .15s ease,color .15s ease,border-color .15s ease}
+      .nl-drop:hover{background:#224753;color:#f4f9f9;border-color:rgba(50,230,226,0.3)}
+      .nl-drop .nl-arrow{transition:transform .18s cubic-bezier(.34,1.4,.4,1)}
+      .nl-drop:hover .nl-arrow{transform:translateX(3px)}
+      .nl-badge{display:flex;align-items:center;gap:9px;white-space:nowrap;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(180deg,#142b34,#0e1e25);color:#f4f9f9;border-radius:999px;padding:9px 14px 9px 11px;font-size:13px;font-weight:600;letter-spacing:0.01em;transition:border-color .2s ease}
+      .nl-badge:hover{border-color:rgba(50,230,226,0.26)}
+      .nl-hide{display:block;width:100%;margin-top:10px;border:0;background:transparent;color:#a9bdc2;font-size:11.5px;font-weight:600;padding:4px;border-radius:8px;transition:color .15s ease}
+      .nl-hide:hover{color:#d5e3e6;text-decoration:underline}
+      .nl-badge-label{color:#d5e3e6;font-weight:500}
+      .nl-badge-brand{font-weight:750}
+    &lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+      &lt;div class=&quot;nl-wrap&quot;&gt;
+        &lt;section class=&quot;nl-card&quot; id=&quot;nl-card&quot; aria-label=&quot;Build your own site on Netlify&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;nl-icon-btn nl-tap nl-card-close&quot; id=&quot;nl-card-close&quot; aria-label=&quot;Close&quot;&gt;&lt;svg width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4.5 4.5 11.5 11.5M11.5 4.5 4.5 11.5&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+          &lt;h2&gt;&lt;em&gt;Build your own site with Netlify&lt;/em&gt;&lt;/h2&gt;
+          &lt;p&gt;Describe what you want, and an AI agent designs, builds and deploys it in minutes.&lt;/p&gt;
+          &lt;form class=&quot;nl-prompt&quot; action=&quot;https://app.netlify.com/start&quot; method=&quot;get&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;textarea name=&quot;prompt&quot; rows=&quot;2&quot; required maxlength=&quot;300&quot; autocomplete=&quot;off&quot;
+                      enterkeyhint=&quot;go&quot;
+                      placeholder=&quot;A shop for my handmade surfboards&amp;hellip;&quot;
+                      aria-label=&quot;Describe the site you want to build&quot;&gt;&lt;/textarea&gt;
+            &lt;button type=&quot;submit&quot; class=&quot;nl-send nl-tap&quot; aria-label=&quot;Build this site&quot;&gt;&lt;svg width=&quot;13&quot; height=&quot;13&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 12.75v-9.5M3.9 7.35 8 3.25l4.1 4.1&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_source&quot; value=&quot;netlify_badge&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_campaign&quot; value=&quot;loops&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_medium&quot; value=&quot;owned&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_content&quot; value=&quot;prompt&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_id&quot; value=&quot;4f0827e5-524f-402d-bd52-cf760fca3408&quot;&gt;
+            
+          &lt;/form&gt;
+          &lt;div class=&quot;nl-or&quot;&gt;&lt;span&gt;or&lt;/span&gt;&lt;/div&gt;
+          &lt;a class=&quot;nl-drop&quot; href=&quot;https://app.netlify.com/drop?utm_source=netlify_badge&amp;utm_campaign=loops&amp;utm_medium=owned&amp;utm_content=drop&amp;utm_id=4f0827e5-524f-402d-bd52-cf760fca3408&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;span&gt;Drop a site you already have&lt;/span&gt;&lt;span class=&quot;nl-arrow&quot; aria-hidden=&quot;true&quot;&gt;&amp;rarr;&lt;/span&gt;
+          &lt;/a&gt;
+          
+        &lt;/section&gt;
+        &lt;button type=&quot;button&quot; class=&quot;nl-badge&quot; id=&quot;nl-badge&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;nl-card&quot;
+                aria-label=&quot;Powered by Netlify — build your own site&quot;&gt;
+          &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 32 32&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot;&gt;
+    &lt;path fill=&quot;#fff&quot; d=&quot;M17.9922 18.3225H14.005L13.6746 17.9921V14.005L14.005 13.6746H17.9922L18.3226 14.005V17.9921L17.9922 18.3225Z&quot;/&gt;
+    &lt;g fill=&quot;#05BDBA&quot;&gt;
+      &lt;path d=&quot;M9.6958 24.3311H9.35705L7.6661 22.6401V22.3041L10.2511 19.7164L12.042 19.7191L12.2808 19.9552V21.7461L9.6958 24.3311Z&quot;/&gt;
+      &lt;path d=&quot;M7.6661 9.69576V9.35701L9.35705 7.66606H9.6958L12.2808 10.2511V12.0392L12.042 12.2808H10.2511L7.6661 9.69576Z&quot;/&gt;
+      &lt;path d=&quot;M10.0457 17.4369H0.205466L0 17.2314V14.7658L0.205466 14.5603H10.0457L10.2511 14.7658V17.2314L10.0457 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M31.7945 17.4369H21.9544L21.7489 17.2314V14.7658L21.9544 14.5603H31.7945L32 14.7658V17.2314L31.7945 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 10.0456V2.66547L14.7686 2.46001H17.2343L17.4396 2.66547V10.0456L17.2343 10.2511H14.7686L14.5631 10.0456Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 29.3316V21.9515L14.7686 21.746H17.2343L17.4396 21.9515V29.3316L17.2343 29.5371H14.7686L14.5631 29.3316Z&quot;/&gt;
+    &lt;/g&gt;&lt;/svg&gt;
+          &lt;span&gt;&lt;span class=&quot;nl-badge-label&quot;&gt;Powered by&lt;/span&gt; &lt;span class=&quot;nl-badge-brand&quot;&gt;Netlify&lt;/span&gt;&lt;/span&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;script&gt;
+        
+    function nlSend(){
+      var wrap=document.querySelector('.nl-wrap'),boxes=[];
+      for(var i=0;i&lt;wrap.children.length;i++){
+        var c=wrap.children[i];
+        if(!c.offsetWidth||!c.offsetHeight)continue;
+        boxes.push({x:c.offsetLeft-wrap.offsetLeft+8,
+                    y:c.offsetTop-wrap.offsetTop+8,
+                    w:c.offsetWidth,h:c.offsetHeight});
+      }
+      parent.postMessage({nlHud:'resize',
+        width:wrap.offsetWidth+26,
+        height:wrap.offsetHeight+26,
+        boxes:boxes},'*');
+    }
+    function nlSendSoon(){requestAnimationFrame(nlSend);}
+    window.addEventListener('load',nlSend);
+    window.addEventListener('message',function(e){
+      if(e.source!==parent||!e.data||e.data.nlHud!=='viewport')return;
+      var s=document.documentElement.style;
+      s.setProperty('--nl-vw',e.data.w+'px');
+      s.setProperty('--nl-vh',e.data.h+'px');
+      document.documentElement.classList.toggle('nl-narrow',e.data.w&lt;600);
+      nlSendSoon();
+    });
+    var nlCoarse=window.matchMedia('(pointer: coarse)').matches;
+    function nlSubmit(form){
+      if(form.requestSubmit)return form.requestSubmit();
+      if(form.checkValidity&amp;&amp;!form.checkValidity())
+        return form.reportValidity&amp;&amp;form.reportValidity();
+      form.submit();
+    }
+  
+        var badge=document.getElementById('nl-badge'),card=document.getElementById('nl-card'),
+            box=card.querySelector('textarea');
+        function setOpen(open){
+          card.classList.toggle('open',open);
+          badge.setAttribute('aria-expanded',open?'true':'false');
+          nlSendSoon();
+          if(open&amp;&amp;!nlCoarse)box.focus();
+        }
+        box.addEventListener('keydown',function(e){
+          if(e.key==='Enter'&amp;&amp;!e.shiftKey){e.preventDefault();nlSubmit(box.form);}
+        });
+        badge.addEventListener('click',function(){setOpen(!card.classList.contains('open'));});
+        document.getElementById('nl-card-close').addEventListener('click',function(){setOpen(false);badge.focus();});
+        document.addEventListener('keydown',function(e){
+          if(e.key==='Escape'&amp;&amp;card.classList.contains('open')){setOpen(false);badge.focus();}
+        });
+        card.addEventListener('click',function(e){
+          if(e.target.closest('#nl-hide'))parent.postMessage({nlHud:'state',value:'hidden'},'*');
+        });
+      &lt;/script&gt;
+    &lt;/body&gt;&lt;/html&gt;" style="position: fixed; bottom: 0px; right: 0px; border: 0px; margin: 0px; padding: 0px; background: transparent; color-scheme: dark; z-index: 2147483645; width: 197px; height: 64px; clip-path: path(&quot;M 3 3 H 184 V 51 H 3 Z&quot;);" data-nl-ready="1"></iframe></body></html>

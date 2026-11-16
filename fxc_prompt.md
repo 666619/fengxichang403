@@ -108,3 +108,27 @@ prompts.html 添加提示词前后变化效果演示，要能看到变化。如�
 创建技能skill：提交到github，将本项目提交commit并push到 https://github.com/666619/fxc403.git ，使用已设置公钥。
 
 ---
+
+## 2026-11-12 | DeepSeek-V4.1-Flash
+
+给我新建一个html文件，显示上图下文的结构，图片和文字通过本地启动服务器获取当前文件夹下面的db里面db.json的poems里面的图片，title和content。并给我生成server.js数据服务器文件，server.js放在db文件夹中。其中端口号为3004。
+
+---
+
+## 2026-11-12 | DeepSeek-V4.1-Flash
+
+给我新建一个html文件，显示上图下文的结构，图片和文字通过本地启动服务器获取当前文件夹下面的db里面db.json的poems里面的图片，title和content。并给我生成server.js数据服务器文件，server.js放在db文件夹中。其中端口号为3005。
+
+---
+
+## 2026-11-12 | DeepSeek-V4.1-Flash
+
+给我新建一个html文件，显示上图下文的结构，图片和文字通过本地启动服务器获取当前文件夹下面的db里面db.json的poems里面的图片，title和content。并给我生成server.js数据服务器文件，server.js放在db文件夹中。其中端口号为3005。
+
+---
+
+## 2026-11-12 | DeepSeek-V4.1-Flash
+
+d:\0403\db\db.json 生成图片
+
+---

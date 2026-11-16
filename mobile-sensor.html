@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- 手机三件套①：视口 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0f12">
+<title>摇一摇 · 抽今日菜谱（设备传感器 + 降级）</title>
+<!--
+  ============================================================
+  文件：mobile-sensor.html
+  作者：冯玺成
+  学号：24001010403
+  班级：24004 班 03 号
+  日期：2026-11-16
+  任务：任务四 ⭐⭐⭐⭐ 摇一摇彩蛋（设备传感器 + 权限 + 降级）
+  要点：
+    1. devicemotion 取 accelerationIncludingGravity 算合成加速度；
+    2. 阈值 18、冷却 1500ms —— 一次摇动只触发一次；
+    3. iOS 13+ 必须用户点击后 requestPermission；
+    4. 没有传感器 / 3.5s 内收不到数据 → 友好提示 + "点我抽一次"降级按钮。
+  ============================================================
+-->
+<style>
+  /* 手机三件套②：全局去掉点击灰块 */
+  * { -webkit-tap-highlight-color: transparent; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 22px 18px 34px;
+    background:
+      radial-gradient(900px 460px at 50% -12%, rgba(64, 192, 170, 0.16), transparent 70%),
+      radial-gradient(700px 380px at 110% 105%, rgba(232, 192, 120, 0.12), transparent 70%),
+      #0b0f12;
+    color: #f2f5f4;
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- 顶部 ---------- */
+  .fxc_badgeLine {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #57d3bd;
+    border: 1px solid rgba(87, 211, 189, 0.32);
+    border-radius: 999px;
+    padding: 4px 10px;
+    background: rgba(87, 211, 189, 0.08);
+  }
+  .fxc_h1 {
+    margin: 14px 0 6px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+  }
+  .fxc_h1 span {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    color: #8b9aa0;
+    margin-top: 6px;
+    letter-spacing: 0;
+  }
+
+  /* ---------- 状态行 ---------- */
+  .fxc_status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0 14px;
+    font-size: 12px;
+    color: #8b9aa0;
+  }
+  .fxc_statusDot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #6b7a80;
+    transition: background 0.3s;
+  }
+  .fxc_statusDot.fxc_ok      { background: #57d3bd; box-shadow: 0 0 0 4px rgba(87, 211, 189, 0.14); }
+  .fxc_statusDot.fxc_bad     { background: #e8a33d; box-shadow: 0 0 0 4px rgba(232, 163, 61, 0.14); }
+  .fxc_statusText { font-variant-numeric: tabular-nums; }
+
+  /* ---------- 菜谱结果卡 ---------- */
+  .fxc_result {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 26px 22px 22px;
+    min-height: 208px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(150deg, #17313a 0%, #10212a 55%, #0c161b 100%);
+    border: 1px solid rgba(87, 211, 189, 0.22);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+  }
+  .fxc_result::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 88% 8%, rgba(87, 211, 189, 0.16), transparent 52%);
+    pointer-events: none;
+  }
+  .fxc_emoji {
+    font-size: 44px;
+    line-height: 1;
+    transition: transform 0.3s;
+  }
+  .fxc_dishName {
+    margin: 12px 0 6px;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+  }
+  .fxc_dishDesc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #a9bcc0;
+  }
+  .fxc_dishTag {
+    margin-top: 16px;
+    align-self: flex-start;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #57d3bd;
+    border: 1px dashed rgba(87, 211, 189, 0.42);
+    border-radius: 8px;
+    padding: 5px 9px;
+  }
+
+  /* 抽中时的弹出动画（加 class 触发，移除后再加可重复播放） */
+  @keyframes fxc_pop {
+    0%   { opacity: 0; transform: translateY(12px) scale(0.86); }
+    60%  { opacity: 1; transform: translateY(-3px) scale(1.04); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .fxc_pop { animation: fxc_pop 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+
+  /* ---------- 加速度仪表 ---------- */
+  .fxc_meter {
+    margin: 16px 0 0;
+    padding: 14px 16px 12px;
+    background: #101820;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+  }
+  .fxc_meterTop {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: #7f8f95;
+    letter-spacing: 1px;
+  }
+  .fxc_gValue { color: #e8c078; font-variant-numeric: tabular-nums; font-size: 13px; }
+  .fxc_track {
+    position: relative;
+    height: 6px;
+    margin: 10px 0 4px;
+    border-radius: 6px;
+    background: #1d2a31;
+    overflow: hidden;
+  }
+  .fxc_bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #2f9c8b, #57d3bd 62%, #e8c078);
+    transition: width 0.12s linear;
+  }
+  .fxc_mark {
+    position: absolute;
+    top: -3px; bottom: -3px;
+    width: 2px;
+    background: rgba(232, 192, 120, 0.85);
+  }
+  .fxc_scaleText {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #5f6d73;
+  }
+
+  /* ---------- 按钮 ---------- */
+  .fxc_actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .fxc_btn {
+    flex: 1;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 13px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: #1a242b;
+    color: #e7edf0;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s, opacity 0.2s;
+  }
+  .fxc_btn:active { transform: scale(0.97); background: #223038; }
+  .fxc_btnMain {
+    border-color: rgba(87, 211, 189, 0.5);
+    background: linear-gradient(140deg, rgba(47, 156, 139, 0.92), rgba(30, 116, 104, 0.92));
+    color: #eafff9;
+  }
+  .fxc_btn[hidden] { display: none; }
+
+  /* ---------- 不支持横幅 ---------- */
+  .fxc_alert {
+    margin-top: 14px;
+    padding: 13px 15px;
+    border-radius: 13px;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #f0cf9a;
+    background: rgba(232, 163, 61, 0.1);
+    border: 1px solid rgba(232, 163, 61, 0.36);
+  }
+  .fxc_alert[hidden] { display: none; }
+  .fxc_alert b { color: #ffd79a; }
+
+  /* ---------- 说明 ---------- */
+  .fxc_panel {
+    margin-top: 20px;
+    padding: 16px 16px 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+  }
+  .fxc_panelTitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #57d3bd;
+    margin-bottom: 10px;
+  }
+  .fxc_item {
+    display: flex;
+    gap: 9px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 12.5px;
+    line-height: 1.72;
+    color: #c2d0d4;
+  }
+  .fxc_item:first-of-type { border-top: 0; }
+  .fxc_item b { color: #fff; font-weight: 600; }
+  .fxc_tick { color: #57d3bd; flex: 0 0 auto; }
+
+  .fxc_footNote {
+    text-align: center;
+    font-size: 11px;
+    color: #55636a;
+    padding-top: 22px;
+  }
+
+  /* 没有传感器时按钮的"降级"高亮 */
+  .fxc_btnFallback { border-color: rgba(232, 192, 120, 0.55); color: #f6dfb2; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="fxc_badgeLine">DEVICE MOTION · 任务四 ⭐⭐⭐⭐</div>
+  <h1 class="fxc_h1">摇一摇，抽今日菜谱
+    <span>加速度阈值 18 · 冷却 1.5s · 无传感器自动降级</span>
+  </h1>
+</header>
+
+<div class="fxc_status">
+  <i class="fxc_statusDot" id="fxcDot"></i>
+  <span class="fxc_statusText" id="fxcStatus">正在检测传感器…</span>
+</div>
+
+<!-- 结果卡 -->
+<div class="fxc_result" id="fxcResult">
+  <div class="fxc_emoji" id="fxcEmoji">🥢</div>
+  <div class="fxc_dishName" id="fxcDishName">摇一摇手机</div>
+  <p class="fxc_dishDesc" id="fxcDishDesc">连续摇动手机，从 6 道家常菜里抽一道今天的菜谱。</p>
+  <span class="fxc_dishTag" id="fxcDishTag">等待摇动</span>
+</div>
+
+<!-- 加速度仪表：让"阈值"这件事看得见 -->
+<div class="fxc_meter">
+  <div class="fxc_meterTop">
+    <span>合成加速度 |a|（含重力）</span>
+    <span class="fxc_gValue" id="fxcG">—</span>
+  </div>
+  <div class="fxc_track">
+    <div class="fxc_bar" id="fxcBar"></div>
+    <!-- 阈值标记放在 18/30 处 -->
+    <div class="fxc_mark" id="fxcMark"></div>
+  </div>
+  <div class="fxc_scaleText"><span>0</span><span>阈值 18</span><span>30</span></div>
+</div>
+
+<!-- 不支持时的提示横幅 -->
+<div class="fxc_alert" id="fxcAlert" hidden>
+  <b>当前设备不支持，请用手机打开。</b><br>
+  没有收到 devicemotion 数据，已自动切到按钮模式，点下面的按钮照样能抽菜谱。
+</div>
+
+<div class="fxc_actions">
+  <button class="fxc_btn fxc_btnMain" id="fxcPermission" type="button" hidden>授权传感器</button>
+  <button class="fxc_btn" id="fxcFallback" type="button">点我抽一次</button>
+</div>
+
+<!-- 说明：为什么必须做降级 -->
+<section class="fxc_panel">
+  <div class="fxc_panelTitle">为 什 么 必 须 做 降 级</div>
+  <div class="fxc_item"><i class="fxc_tick">✓</i><div><b>硬件不是人人都有。</b>台式机、部分平板、老机型根本没有加速度计，<b>devicemotion</b> 压根不触发，监听器写了也是空的。</div></div>
+  <div class="fxc_item"><i class="fxc_tick">✓</i><div><b>权限可能被拒。</b>iOS 13+ 要用户手势里调 <b>requestPermission()</b>，用户点"不允许"，功能就彻底不可用。</div></div>
+  <div class="fxc_item"><i class="fxc_tick">✓</i><div><b>没有数据 ≠ 没有功能。</b>抽菜谱这件事本身不依赖传感器，摇一摇只是"更好玩的入口"，主功能必须留一条不依赖硬件的手动路径。</div></div>
+  <div class="fxc_item"><i class="fxc_tick">✓</i><div><b>不降级就是白屏。</b>不给提示、不给按钮，用户只会觉得页面坏了 —— 降级分支其实就是排错分支。</div></div>
+</section>
+
+<div class="fxc_footNote">冯玺成 · 24001010403 · 高级网页设计 · 移动端事件</div>
+
+<script>
+/* ============================================================
+ * 摇一摇逻辑
+ * 合成加速度 = √(x² + y² + z²)  → 超过阈值即判定摇动 → 冷却内只算一次
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---- 1. 元素 ---- */
+  var fxc_dot      = document.getElementById('fxcDot');
+  var fxc_status   = document.getElementById('fxcStatus');
+  var fxc_result   = document.getElementById('fxcResult');
+  var fxc_emoji    = document.getElementById('fxcEmoji');
+  var fxc_name     = document.getElementById('fxcDishName');
+  var fxc_desc     = document.getElementById('fxcDishDesc');
+  var fxc_tag      = document.getElementById('fxcDishTag');
+  var fxc_gval     = document.getElementById('fxcG');
+  var fxc_bar      = document.getElementById('fxcBar');
+  var fxc_mark     = document.getElementById('fxcMark');
+  var fxc_alert    = document.getElementById('fxcAlert');
+  var fxc_btnPerm  = document.getElementById('fxcPermission');
+  var fxc_btnFall  = document.getElementById('fxcFallback');
+
+  /* ---- 2. 常量 ---- */
+  var FXC_SHAKE_THRESHOLD = 18;     // 阈值：静止时 |a|≈9.8（含重力），18 才算摇起来
+  var FXC_COOLDOWN = 1500;          // 冷却 1.5s：一次摇动只触发一次
+  var FXC_WATCHDOG = 3500;          // 3.5s 内一帧数据都没来 → 判定"没有传感器"
+
+  /* ---- 3. 菜谱数据 ---- */
+  var fxc_menu = [
+    { emoji: '🥟', name: '小笼包',  desc: '皮薄汁多，一笼六只，蘸姜丝香醋趁热吃。',       tag: '江浙 · 早餐' },
+    { emoji: '🍜', name: '兰州牛肉面', desc: '一清二白三红四绿五黄，毛细配萝卜片最地道。', tag: '甘肃 · 面食' },
+    { emoji: '🌶️', name: '麻婆豆腐', desc: '麻辣烫鲜，豆腐嫩得用勺舀，配白饭最稳。',      tag: '四川 · 家常' },
+    { emoji: '🦆', name: '北京烤鸭', desc: '片皮蘸酱卷饼，加葱丝瓜条，一鸭三吃不浪费。',   tag: '北京 · 硬菜' },
+    { emoji: '🐔', name: '白切鸡',  desc: '冰水激过皮更爽，姜葱茸一拌，吃原味。',         tag: '广东 · 冷盘' },
+    { emoji: '🥘', name: '番茄牛腩', desc: '小火慢炖两小时，汤汁拌面拌饭都香。',           tag: '家常 · 炖菜' }
+  ];
+
+  /* ---- 4. 状态 ---- */
+  var fxc_lastShake  = 0;      // 上次触发时间（冷却用）
+  var fxc_hasData    = false;  // 是否收到过 devicemotion 数据
+  var fxc_bound      = false;  // 是否已绑定监听
+  var fxc_lastIndex  = -1;     // 上次抽到的下标，避免连着抽同一道
+  var fxc_watchTimer = null;
+  var fxc_degraded   = false;  // 当前是否处于降级模式（迟到数据要能收回这个状态）
+
+  /* ---- 5. 阈值刻度：把 18 标在 0~30 的 60% 处 ---- */
+  fxc_mark.style.left = (FXC_SHAKE_THRESHOLD / 30 * 100) + '%';
+
+  /* ---- 6. 状态灯与文案 ---- */
+  function fxc_setStatus(fxc_level, fxc_text) {
+    fxc_dot.className = 'fxc_statusDot' +
+      (fxc_level === 'ok' ? ' fxc_ok' : (fxc_level === 'bad' ? ' fxc_bad' : ''));
+    fxc_status.textContent = fxc_text;
+  }
+
+  /* ---- 7. 抽一道菜并播放弹出动画 ---- */
+  function fxc_draw() {
+    var fxc_i = fxc_lastIndex;
+    // 6 道菜里随机，避开刚抽到的那一道
+    while (fxc_i === fxc_lastIndex && fxc_menu.length > 1) {
+      fxc_i = Math.floor(Math.random() * fxc_menu.length);
+    }
+    fxc_lastIndex = fxc_i;
+
+    var fxc_item = fxc_menu[fxc_i];
+    fxc_emoji.textContent = fxc_item.emoji;
+    fxc_name.textContent  = fxc_item.name;
+    fxc_desc.textContent  = fxc_item.desc;
+    fxc_tag.textContent   = fxc_item.tag;
+
+    // 动画要"先摘掉再加"，否则第二次不重播
+    fxc_result.classList.remove('fxc_pop');
+    void fxc_result.offsetWidth;      // 强制回流，重置动画
+    fxc_result.classList.add('fxc_pop');
+  }
+
+  /* ---- 8. devicemotion 处理：算合成加速度，过阈值 + 冷却才触发 ---- */
+  function fxc_onMotion(fxc_e) {
+    // 优先用 accelerationIncludingGravity（含重力，静止≈9.8，稳定可用）
+    // 没有就退回 acceleration（去重力值，静止≈0，阈值要另设，做兜底）
+    var fxc_a = fxc_e.accelerationIncludingGravity || fxc_e.acceleration;
+    if (!fxc_a || fxc_a.x === null || fxc_a.x === undefined) { return; }
+
+    fxc_hasData = true;
+    if (fxc_watchTimer) { clearTimeout(fxc_watchTimer); fxc_watchTimer = null; }
+    // 数据迟到了（比如用户后来才授权）：把降级状态收回，界面回到"已就绪"
+    if (fxc_degraded) { fxc_setSupported(); }
+    fxc_setStatus('ok', '传感器已就绪 · 摇一摇手机');
+
+    // 合成加速度：三轴平方和开根号
+    var fxc_g = Math.sqrt(
+      fxc_a.x * fxc_a.x +
+      fxc_a.y * fxc_a.y +
+      fxc_a.z * fxc_a.z
+    );
+
+    // 仪表可视化：0~30 映射到 0~100%
+    fxc_gval.textContent = fxc_g.toFixed(1) + ' m/s²';
+    fxc_bar.style.width = Math.min(100, fxc_g / 30 * 100) + '%';
+    // 过阈值时仪表变亮
+    fxc_bar.style.filter = fxc_g > FXC_SHAKE_THRESHOLD ? 'brightness(1.25)' : 'none';
+
+    var fxc_now = Date.now();
+    if (fxc_g > FXC_SHAKE_THRESHOLD && fxc_now - fxc_lastShake > FXC_COOLDOWN) {
+      fxc_lastShake = fxc_now;
+      fxc_draw();
+    }
+  }
+
+  /* ---- 9. 绑定监听 + 看门狗 ---- */
+  function fxc_bind() {
+    if (fxc_bound) { return; }
+    fxc_bound = true;
+
+    window.addEventListener('devicemotion', fxc_onMotion, { passive: true });
+
+    // 看门狗：监听了不代表有数据（可能是无传感器设备）
+    if (fxc_watchTimer) { clearTimeout(fxc_watchTimer); }
+    fxc_watchTimer = setTimeout(function () {
+      if (!fxc_hasData) { fxc_setUnsupported(); }
+    }, FXC_WATCHDOG);
+  }
+
+  /* ---- 10. 降级：提示 + 高亮手动按钮 ---- */
+  function fxc_setUnsupported() {
+    if (fxc_hasData) { return; }        // 已经有数据了，不再往下走
+    fxc_degraded = true;
+    fxc_setStatus('bad', '当前设备不支持，请用手机打开');
+    fxc_alert.hidden = false;
+    fxc_btnFall.className = 'fxc_btn fxc_btnFallback';
+    fxc_btnFall.textContent = '点我抽一次（降级模式）';
+    if (fxc_name.textContent === '摇一摇手机') {
+      fxc_tag.textContent = '已降级 · 用按钮抽';
+    }
+  }
+
+  /* ---- 10.1 反向：一旦真的收到数据，把降级界面收回 ---- */
+  function fxc_setSupported() {
+    fxc_degraded = false;
+    fxc_alert.hidden = true;
+    fxc_alert.innerHTML = '';           // 清掉 iOS 授权那段文案，避免残留
+    fxc_btnFall.className = 'fxc_btn';
+    fxc_btnFall.textContent = '点我抽一次';
+  }
+
+  /* ---- 11. 启动：分清三种情况 ---- */
+  function fxc_start() {
+    // 情况一：浏览器压根没有 DeviceMotionEvent
+    if (typeof window.DeviceMotionEvent === 'undefined') {
+      fxc_setUnsupported();
+      return;
+    }
+
+    // 情况二：iOS 13+ 必须用户手势里申请权限
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      fxc_setStatus('', '需要你点一下按钮授权');
+      fxc_btnPerm.hidden = false;
+      fxc_alert.hidden = false;
+      fxc_alert.innerHTML = '<b>iOS 需要用户手势授权。</b><br>点下面的「授权传感器」，系统会弹出运动与方向访问权限。';
+      return;
+    }
+
+    // 情况三：安卓 / 桌面浏览器，直接绑定，用看门狗兜底
+    fxc_setStatus('', '正在检测传感器…');
+    fxc_bind();
+  }
+
+  /* ---- 12. iOS 授权按钮（点击必须发生在用户手势中） ---- */
+  fxc_btnPerm.addEventListener('click', function () {
+    fxc_btnPerm.disabled = true;
+    fxc_btnPerm.textContent = '申请中…';
+
+    DeviceMotionEvent.requestPermission().then(function (fxc_state) {
+      if (fxc_state === 'granted') {
+        fxc_btnPerm.hidden = true;
+        fxc_alert.hidden = true;
+        fxc_setStatus('ok', '授权成功 · 摇一摇手机');
+        fxc_bind();
+      } else {
+        fxc_btnPerm.disabled = false;
+        fxc_btnPerm.textContent = '重新授权';
+        fxc_setUnsupported();
+        fxc_status.textContent = '权限被拒绝，已切到按钮模式';
+      }
+    }).catch(function () {
+      // 用户拒绝或环境不支持（非 HTTPS 等）都会走到这里，绝不能白屏
+      fxc_btnPerm.disabled = false;
+      fxc_btnPerm.textContent = '重新授权';
+      fxc_setUnsupported();
+    });
+  });
+
+  /* ---- 13. 降级按钮：不依赖任何硬件，永远可用 ---- */
+  fxc_btnFall.addEventListener('click', function () {
+    fxc_draw();
+    if (!fxc_hasData) { fxc_tag.textContent = '手动抽取 · 无需传感器'; }
+  });
+
+  /* ---- 14. 启动 ---- */
+  fxc_start();
+})();
+</script>
+</body>
+</html>
