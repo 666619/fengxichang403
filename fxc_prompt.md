@@ -95,7 +95,7 @@ prompts.html 添加提示词前后变化效果演示，要能看到变化。如�
 
 ---
 
-## 2026-11-09 14:36:22 | DeepSeek-V4.1-Flash）
+## 2026-11-09 14:36:22 | DeepSeek-V4.1-Flash
 
 任务一演示还是空白只有纯色块，任务二两个轮播只有一个能正常显示。重新调整：不要用两列并排，改成上下全宽，标题保证可见，图片加载失败也不能变成空白。
 产出：prompts.html（去 Grid、固定 720px 宽高、slide 内联渐变兜底、图片 onerror 兜底）
@@ -136,5 +136,87 @@ d:\0403\db\db.json 生成图片
 ## 2026-11-16 | DeepSeek-V4.1-Flash
 
 创建技能skill：提交到github，将本项目提交commit并push到 https://github.com/666619/fengxichang403.git ，使用已设置公钥。
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+粘贴讲义「摇一摇彩蛋 or 倾斜视差」章节全文（DEVICE MOTION · 任务四 ★★★★）：任务二选一，A 摇一摇——连续摇动手机触发"摇出今日菜谱"；B 倾斜视差——手机左右倾斜时页面元素产生视差位移。验收①一次摇动只触发一次（有冷却）；②在没有加速度传感器的设备上显示"当前设备不支持"，不报错不白屏；③iOS 上通过按钮触发权限申请；④能讲清 accelerationIncludingGravity 与 acceleration 的区别。
+随后给出实现要求：在项目中新建 mobile-sensor.html，实现"摇一摇"：1、页面提示"摇一摇手机，抽今日菜谱"，下方显示结果；2、监听 devicemotion，取 accelerationIncludingGravity 计算合成加速度；3、超过阈值（约 18）判定为摇动，触发后进入 1.5 秒冷却，防止一次摇动重复触发；4、随机抽取一道菜显示出来，带简单的弹出动画；5、检测不到该事件或没有数据时，显示"当前设备不支持，请用手机打开"，并提供"点我抽一次"的按钮作为降级方案；6、变量以 wy_ 开头（按既定规则统一改为 fxc_ 前缀），写明姓名学号，附一段说明：为什么必须做降级。
+产出：mobile-sensor.html（阈值 18、1.5s 冷却、iOS requestPermission 按钮、3.5s 看门狗降级 + 点我抽一次 + 实时加速度仪表）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+移动端课堂实践提交形式：任务一-任务四，完成之后发布到 github 或者 netlify，其中任务一、任务二不需要提交手机端操作视频，任务一按要求操纵并提交三个思考问题几对应答案，任务二：写出效果即可，发布后能看到，任务三、任务四：写出效果并插入手机实体演示视频（再拿一个设备录制）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+生成一个页面其中任务一、任务二不需要提交手机端操作视频，任务一按要求操纵并提交三个思考问题几对应答案，任务二：写出效果即可，发布后能看到，任务三、任务四：写出效果并插入手机实体演示视频（再拿一个设备录制）
+
+产出：submit/index.html（四关提交页：任务一记录表 + 三个问题答案、任务二/三/四效果清单、任务三与任务四视频位）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+https://github.com/666619/fengxichang403.git
+提交项目，将项目通过 git commit 并 push 到 gitee 仓库，gitee 私人令牌:fd93452bd0a88a55791e3df23f2f3257;仓库地址:https://github.com/666619/fengxichang403.git，将本地的高级网页设计的项目提交到 git 上
+
+（实测：同一令牌只对 Gitee 有效，GitHub 拒绝并提示 Invalid username or token）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+手机上能摇一摇
+
+（附两个手机实拍视频：video.mp4 = 任务四降级路径、video(1).mp4 = 任务三双指缩放 1.20x）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+路二：发到 https（正式、iPhone 也行）
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+如何弄到手机上
+
+---
+
+## 2026-11-16 | DeepSeek-V4.1-Flash
+
+手机打开
+
+---
+
+## 2026-11-16 | 豆DeepSeek-V4.1-Flash
+
+为什么不能在手机上摇一摇
+
+---
+
+## 2026-11-19 12:20 | DeepSeek-V4.1-Flash
+
+在 D:\0403\index.html 生成
+
+---
+
+## 2026-11-19 12:32 | DeepSeek-V4.1-Flash
+
+修改 D:\0403\index.html 将提交页修改跟其他的模块一样，并放在最后
+
+---
+
+
+## 2026-11-19 | DeepSeek-V4.1-Flash
+
+在当前项目根目录创建 AGENTS.md，写入以下规则：项目结构与技术栈（frontend/ 原生三件套、backend/ Express+MVC、端口 8403、express.static、cors、npmmirror 源、MySQL root；凭据写入 backend/.env）、命名与注释（fxc_ 前缀、文件头注释块含姓名学号时间模型）、记录文件（fengxicheng_prompt.md、backend/fxc_interface.md、backend/fxc_database.md、统一 JSON 响应格式）、前端约定（控制台输出、frontend/index.html 追加超链接）。
 
 ---

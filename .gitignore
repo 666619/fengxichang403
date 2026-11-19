@@ -2,3 +2,5 @@ Thumbs.db
 .trae-html-share-packages/
 node_modules/
 *.zip
+.env
+backend/.env

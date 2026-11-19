@@ -1,0 +1,229 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-19 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：高级网页设计 · 课程作品首页
+  功能简介：课程作品导航首页。顶部展示姓名、学号、项目名称与项目类别；
+     主体按「基础与布局 / 图标与字体 / 交互与组件 / 移动端实践 / 数据与提交」
+     五组列出全部已完成页面；底层 canvas 绘制漂移光点连线作为背景。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="冯玺成 24001010403 高级网页设计课程作品集">
+  <title>高级网页设计 · 冯玺成的课堂作品</title>
+  <link rel="stylesheet" href="css/fxc_index.css">
+</head>
+<body>
+
+  <!-- 背景动画层 -->
+  <canvas id="fxc_canvas" class="fxc_canvas" aria-hidden="true"></canvas>
+
+  <div class="fxc_shell">
+
+    <header class="fxc_hero">
+      <div class="fxc_badge">高级网页设计 · 课程作品集</div>
+
+      <h1 class="fxc_title">从标签开始<br>构建<em>页面</em></h1>
+
+      <p class="fxc_sub">
+        课程练习与课堂作业的完整索引：静态页面、图标字体、交互组件、移动端触摸事件与
+        Node.js 数据服务，均以原生 HTML / CSS / JavaScript 实现。
+      </p>
+
+      <div class="fxc_meta">
+        <div class="fxc_metaItem">姓名<b>冯玺成</b></div>
+        <div class="fxc_metaItem">学号<b>24001010403</b></div>
+        <div class="fxc_metaItem">项目名称<b>高级网页设计课堂作品集</b></div>
+        <div class="fxc_metaItem">项目类别<b>自选 / 模仿</b></div>
+      </div>
+    </header>
+
+    <main>
+
+      <!-- 01 基础与布局 -->
+      <section class="fxc_group">
+        <div class="fxc_groupHead">
+          <span class="fxc_groupNo">01</span>
+          <h2 class="fxc_groupName">基础与布局</h2>
+          <span class="fxc_groupHint">7 个页面</span>
+        </div>
+        <div class="fxc_grid">
+          <a class="fxc_card" href="CSS3004.HTML">
+            <span class="fxc_cardName">CSS 基础演示</span>
+            <span class="fxc_cardFile">CSS3004.HTML</span>
+          </a>
+          <a class="fxc_card" href="stack.html">
+            <span class="fxc_cardName">堆叠布局练习</span>
+            <span class="fxc_cardFile">stack.html</span>
+          </a>
+          <a class="fxc_card" href="svg403.html">
+            <span class="fxc_cardName">SVG 图形绘制</span>
+            <span class="fxc_cardFile">svg403.html</span>
+          </a>
+          <a class="fxc_card" href="fxc_24001010403.html">
+            <span class="fxc_cardName">综合页面排版</span>
+            <span class="fxc_cardFile">fxc_24001010403.html</span>
+          </a>
+          <a class="fxc_card" href="dataTyp403.html">
+            <span class="fxc_cardName">JavaScript 数据类型</span>
+            <span class="fxc_cardFile">dataTyp403.html</span>
+          </a>
+          <a class="fxc_card" href="starter-level1.html">
+            <span class="fxc_cardName">数据渲染入门</span>
+            <span class="fxc_cardFile">starter-level1.html</span>
+          </a>
+          <a class="fxc_card" href="starter-level2.html">
+            <span class="fxc_cardName">数据渲染进阶</span>
+            <span class="fxc_cardFile">starter-level2.html</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 02 图标与字体 -->
+      <section class="fxc_group">
+        <div class="fxc_groupHead">
+          <span class="fxc_groupNo">02</span>
+          <h2 class="fxc_groupName">图标与字体</h2>
+          <span class="fxc_groupHint">7 个页面</span>
+        </div>
+        <div class="fxc_grid">
+          <a class="fxc_card" href="iconfont-1.html">
+            <span class="fxc_cardName">Font Awesome 字体图标</span>
+            <span class="fxc_cardFile">iconfont-1.html</span>
+          </a>
+          <a class="fxc_card" href="inconfont-2.html">
+            <span class="fxc_cardName">Lucide SVG 图标</span>
+            <span class="fxc_cardFile">inconfont-2.html</span>
+          </a>
+          <a class="fxc_card" href="iconfont-3.html">
+            <span class="fxc_cardName">移动端底部导航（字体图标）</span>
+            <span class="fxc_cardFile">iconfont-3.html</span>
+          </a>
+          <a class="fxc_card" href="iconfont-4.html">
+            <span class="fxc_cardName">移动端底部导航（SVG）</span>
+            <span class="fxc_cardFile">iconfont-4.html</span>
+          </a>
+          <a class="fxc_card" href="my/fcx-iconfont-lib.html">
+            <span class="fxc_cardName">iconfont 图标库</span>
+            <span class="fxc_cardFile">my/fcx-iconfont-lib.html</span>
+          </a>
+          <a class="fxc_card" href="my/fcx-tomato-font.html">
+            <span class="fxc_cardName">番茄字体图标</span>
+            <span class="fxc_cardFile">my/fcx-tomato-font.html</span>
+          </a>
+          <a class="fxc_card" href="font/demo_index.html">
+            <span class="fxc_cardName">iconfont 官方示例</span>
+            <span class="fxc_cardFile">font/demo_index.html</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 03 交互与组件 -->
+      <section class="fxc_group">
+        <div class="fxc_groupHead">
+          <span class="fxc_groupNo">03</span>
+          <h2 class="fxc_groupName">交互与组件</h2>
+          <span class="fxc_groupHint">5 个页面</span>
+        </div>
+        <div class="fxc_grid">
+          <a class="fxc_card" href="tab-news.html">
+            <span class="fxc_cardName">选项卡 · 新闻栏目</span>
+            <span class="fxc_cardFile">tab-news.html</span>
+          </a>
+          <a class="fxc_card" href="tab-news-2.html">
+            <span class="fxc_cardName">选项卡 · 图文新闻</span>
+            <span class="fxc_cardFile">tab-news-2.html</span>
+          </a>
+          <a class="fxc_card" href="tab-market.html">
+            <span class="fxc_cardName">选项卡 · 沪深行情</span>
+            <span class="fxc_cardFile">tab-market.html</span>
+          </a>
+          <a class="fxc_card" href="swiper-task.html">
+            <span class="fxc_cardName">Swiper 轮播五种效果</span>
+            <span class="fxc_cardFile">swiper-task.html</span>
+          </a>
+          <a class="fxc_card" href="prompts.html">
+            <span class="fxc_cardName">AI 提示词记录</span>
+            <span class="fxc_cardFile">prompts.html</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 04 移动端实践 -->
+      <section class="fxc_group">
+        <div class="fxc_groupHead">
+          <span class="fxc_groupNo">04</span>
+          <h2 class="fxc_groupName">移动端实践</h2>
+          <span class="fxc_groupHint">6 个页面</span>
+        </div>
+        <div class="fxc_grid">
+          <a class="fxc_card" href="mobile-touch.html">
+            <span class="fxc_cardName">触摸事件总览</span>
+            <span class="fxc_cardFile">mobile-touch.html</span>
+          </a>
+          <a class="fxc_card" href="mobile-gesture.html">
+            <span class="fxc_cardName">手势滑动卡片</span>
+            <span class="fxc_cardFile">mobile-gesture.html</span>
+          </a>
+          <a class="fxc_card" href="mobile-zoom.html">
+            <span class="fxc_cardName">双指缩放查看器</span>
+            <span class="fxc_cardFile">mobile-zoom.html</span>
+          </a>
+          <a class="fxc_card" href="mobile-sensor.html">
+            <span class="fxc_cardName">摇一摇抽菜品</span>
+            <span class="fxc_cardFile">mobile-sensor.html</span>
+          </a>
+          <a class="fxc_card" href="mobile-events-lesson.html">
+            <span class="fxc_cardName">触摸事件讲义</span>
+            <span class="fxc_cardFile">mobile-events-lesson.html</span>
+          </a>
+          <a class="fxc_card" href="phone.html">
+            <span class="fxc_cardName">手机测试入口</span>
+            <span class="fxc_cardFile">phone.html</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 05 数据与提交 -->
+      <section class="fxc_group">
+        <div class="fxc_groupHead">
+          <span class="fxc_groupNo">05</span>
+          <h2 class="fxc_groupName">数据与提交</h2>
+          <span class="fxc_groupHint">4 个页面</span>
+        </div>
+        <div class="fxc_grid">
+          <a class="fxc_card" href="poem-image-text.html">
+            <span class="fxc_cardName">诗词图文（端口 3004）</span>
+            <span class="fxc_cardFile">poem-image-text.html</span>
+          </a>
+          <a class="fxc_card" href="poem-image-text-3005.html">
+            <span class="fxc_cardName">诗词图文（端口 3005）</span>
+            <span class="fxc_cardFile">poem-image-text-3005.html</span>
+          </a>
+          <a class="fxc_card" href="submit/index.html">
+            <span class="fxc_cardName">移动端作业提交站点</span>
+            <span class="fxc_cardFile">submit/index.html</span>
+          </a>
+          <a class="fxc_card" href="gh-flat/mobile-touch.html">
+            <span class="fxc_cardName">扁平化提交页</span>
+            <span class="fxc_cardFile">gh-flat/mobile-touch.html</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="fxc_foot">
+      <span>冯玺成 · 24001010403</span>
+      <span>高级网页设计 · 课堂作品集</span>
+      <a href="../README.md">项目说明</a>
+    </footer>
+
+  </div>
+
+  <script src="js/fxc_index.js"></script>
+</body>
+</html>

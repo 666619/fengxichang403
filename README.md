@@ -1,39 +1,57 @@
-# fxc403
+# 高级网页设计 · 课程作品集
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+| 项目 | 内容 |
+| --- | --- |
+| 姓名 | 冯玺成 |
+| 学号 | 24001010403 |
+| 项目名称 | 高级网页设计课堂作品集 |
+| 项目类别 | 自选 / 模仿 |
+| 技术栈 | 原生 HTML / CSS / JavaScript + Node.js / Express |
 
-#### 软件架构
-软件架构说明
+## 目录结构
 
+```
+.
+├── frontend/               前端（express.static 托管根目录）
+│   ├── index.html          课程作品首页（canvas 背景动画 + 页面导航）
+│   ├── css/                样式
+│   ├── js/                 脚本
+│   ├── fonts/              iconfont 图标文件
+│   ├── images/             页面配图
+│   └── *.html              各次课堂练习与实践页面
+├── backend/                后端（Express + RESTful + MVC）
+│   ├── server.js           服务入口，端口 8403
+│   ├── config/             数据库连接配置
+│   ├── routes/             路由
+│   ├── controllers/        控制器
+│   ├── models/             模型
+│   ├── .env                数据库凭据（不入库）
+│   ├── fxc_interface.md    接口记录
+│   └── fxc_database.md     数据库 SQL 记录
+├── db/                     诗词图文练习的数据与本地数据服务
+├── AGENTS.md               项目开发规则
+└── fengxicheng_prompt.md   开发提示词记录
+```
 
-#### 安装教程
+## 启动方式
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```bash
+cd backend
+npm install
+node server.js
+```
 
-#### 使用说明
+浏览器访问 <http://localhost:8403/> 进入首页。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 数据库
 
-#### 参与贡献
+MySQL 连接信息写在 `backend/.env`：
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=你的数据库密码
+DB_NAME=fxc403
+```
 
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+`backend/.env` 已加入 `.gitignore`，不会提交到仓库。
