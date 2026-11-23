@@ -1,0 +1,39 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-19 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：图文列表
+  功能简介：图文数据存放在 MySQL 的 fxc_gallery 表中，页面通过后端接口
+     GET /api/gallery 拉取并以卡片网格展示；顶部显示接口地址与返回条数。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图文列表 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_gallery.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">图文列表</h1>
+    <p class="fxc_sub">数据来自 MySQL 数据库表 <code>fxc_gallery</code>，按录入时间倒序输出。</p>
+
+    <div class="fxc_api">
+      <b>后端接口</b>
+      <a href="/api/gallery" target="_blank" rel="noopener">/api/gallery</a>
+      <span id="fxc_count">加载中…</span>
+    </div>
+
+    <main class="fxc_grid" id="fxc_grid">
+      <div class="fxc_state">正在从 /api/gallery 获取图文数据…</div>
+    </main>
+
+  </div>
+
+  <script src="js/fxc_gallery.js"></script>
+</body>
+</html>

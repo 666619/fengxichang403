@@ -1,0 +1,56 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：语音识别
+  功能简介：上传一段音频，服务端以 multipart 转发到七牛云 /audio/transcriptions，
+     使用 Qwen-Audio-3.0-ASR-Flash 模型把语音转成文字。音频可本地试听，
+     请求信息与接口响应同时输出到浏览器控制台，服务端控制台输出收发数据。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语音识别 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_asr.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">语音识别</h1>
+    <p class="fxc_sub">上传语音 → 输出文字。接口：<code>POST /api/asr</code>（字段 <code>audio</code>，≤ 10MB）</p>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">01 · 选择语音</span>
+        <span class="fxc_count" id="fxc_fileMeta">未选择</span>
+      </div>
+
+      <div class="fxc_drop" id="fxc_drop">
+        <div class="fxc_dropMain">点击选择音频，或把音频拖到这里</div>
+        <div class="fxc_dropHint">支持 mp3 / wav / m4a / ogg / webm，单个 ≤ 10MB</div>
+      </div>
+      <input type="file" id="fxc_audio" accept="audio/*" hidden>
+
+      <div class="fxc_preview" id="fxc_preview"></div>
+      <div class="fxc_msg" id="fxc_msg"></div>
+
+      <button class="fxc_btn" id="fxc_sendBtn" type="button" disabled>开始识别</button>
+    </section>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">02 · 识别文字</span>
+        <span class="fxc_count" id="fxc_model">qwen-audio-3.0-asr-flash</span>
+      </div>
+      <div class="fxc_answer" id="fxc_answer">等待上传语音…</div>
+    </section>
+
+  </div>
+
+  <script src="js/fxc_asr.js"></script>
+</body>
+</html>

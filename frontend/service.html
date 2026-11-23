@@ -1,0 +1,46 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：在线客服
+  功能简介：基于七牛云 AI（OpenAI 兼容接口，模型 deepseek/deepseek-v4-flash）的在线客服页面。
+     访客提问提交到后端 /api/service，由服务端携带 API Key 请求模型，
+     按客服口径返回答复；密钥仅保存在 backend/.env。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>在线客服 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_service.css">
+</head>
+<body>
+
+  <header class="fxc_head">
+    <span class="fxc_avatar">客</span>
+    <div class="fxc_who">
+      <div class="fxc_name">课程在线客服</div>
+      <div class="fxc_status"><span class="fxc_dot"></span>在线 · deepseek-v4-flash</div>
+    </div>
+    <a class="fxc_back" href="index.html">← 返回首页</a>
+  </header>
+
+  <main class="fxc_msgs" id="fxc_msgs" aria-live="polite"></main>
+
+  <div class="fxc_quick" id="fxc_quick">
+    <button class="fxc_chip" type="button">页面打不开怎么办</button>
+    <button class="fxc_chip" type="button">数据库连接失败</button>
+    <button class="fxc_chip" type="button">端口 8403 被占用</button>
+    <button class="fxc_chip" type="button">作业怎么提交</button>
+  </div>
+
+  <form class="fxc_composer" onsubmit="return false;">
+    <textarea class="fxc_input" id="fxc_input" rows="1"
+      placeholder="请描述您遇到的问题，例如：打开页面提示接口不存在"></textarea>
+    <button class="fxc_send" id="fxc_send" type="button">发送</button>
+  </form>
+
+  <script src="js/fxc_service.js"></script>
+</body>
+</html>

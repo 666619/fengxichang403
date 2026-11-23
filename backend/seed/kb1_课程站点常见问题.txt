@@ -1,0 +1,24 @@
+课程站点常见问题
+
+一、页面打不开
+1. 先确认后端服务已启动：双击项目根目录的 fxc_start_backend.bat，或在 backend 目录执行 npm start。
+2. 浏览器访问 http://localhost:8403 ，若能看到首页说明静态托管正常。
+3. 若提示"接口不存在"，说明访问路径不在 /api 前缀下，或后端未重启导致新路由未加载。
+4. 端口被占用时，先关闭占用 8403 的进程再启动，避免新旧进程同时存在。
+
+二、数据库连接失败
+1. 确认 MySQL 服务已启动，可用数据库管理工具连接 localhost:3306 检查。
+2. 打开 backend/.env 核对 DB_USER、DB_PASSWORD、DB_HOST、DB_NAME 四项。
+3. 数据库 fxc403 不存在时，先执行建库语句，再执行 fxc_database.md 中的建表与测试数据 SQL。
+4. 报错 Access denied 表示账号或密码不正确；报错 Unknown database 表示库名不存在。
+
+三、接口返回异常
+1. 所有接口统一返回 { code, msg, data }，code 为 0 表示成功，非 0 表示失败。
+2. 失败时先看 msg 字段的中文描述，再看浏览器控制台与后端终端日志。
+3. 免费大模型有频率限制，连续请求会返回"免费模型请求过于频繁"，等待几秒后重试即可。
+
+四、作业提交要求
+1. 每次开发指令需追加记录到项目根目录的 fengxicheng_prompt.md。
+2. 数据库变更需追加记录到 backend/fxc_database.md，接口变更需追加记录到 backend/fxc_interface.md。
+3. 提交前确认 .env 未被加入版本库，node_modules 已被忽略。
+4. 提交信息使用 feat、fix、docs 等前缀说明改动类型。

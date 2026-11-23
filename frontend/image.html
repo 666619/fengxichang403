@@ -1,0 +1,56 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：图像识别
+  功能简介：上传一张图片，服务端把图片转成 base64 多模态消息发给七牛云视觉模型，
+     返回该图片的中文描述。图片预览、请求信息与接口响应同时输出到浏览器控制台，
+     服务端控制台输出发送给大模型的数据与接收自大模型的数据。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图像识别 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_vision.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">图像识别</h1>
+    <p class="fxc_sub">上传图片 → 视觉大模型描述画面内容。接口：<code>POST /api/vision</code>（字段 <code>image</code>，单张 ≤ 8MB）</p>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">01 · 选择图片</span>
+        <span class="fxc_count" id="fxc_fileMeta">未选择</span>
+      </div>
+
+      <div class="fxc_drop" id="fxc_drop">
+        <div class="fxc_dropMain">点击选择图片，或把图片拖到这里</div>
+        <div class="fxc_dropHint">支持 jpg / png / webp / gif，单张 ≤ 8MB</div>
+      </div>
+      <input type="file" id="fxc_image" accept="image/*" hidden>
+
+      <div class="fxc_preview" id="fxc_preview"></div>
+      <div class="fxc_msg" id="fxc_msg"></div>
+
+      <button class="fxc_btn" id="fxc_sendBtn" type="button" disabled>开始识别</button>
+    </section>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">02 · 识别结果</span>
+        <span class="fxc_count" id="fxc_model">deepseek-v4-flash-vision-exp</span>
+      </div>
+      <div class="fxc_answer" id="fxc_answer">等待上传图片…</div>
+    </section>
+
+  </div>
+
+  <script src="js/fxc_vision.js"></script>
+</body>
+</html>

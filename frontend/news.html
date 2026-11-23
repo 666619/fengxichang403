@@ -1,0 +1,39 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-19 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：科技新闻列表
+  功能简介：新闻数据存放在 MySQL 的 fxc_news 表中，页面通过后端接口
+     GET /api/news 拉取列表并渲染；页面顶部展示接口地址与返回条数。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科技新闻 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_news.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">科技新闻</h1>
+    <p class="fxc_sub">数据来自 MySQL 数据库表 <code>fxc_news</code>，经后端接口按发布时间倒序输出。</p>
+
+    <div class="fxc_api">
+      <b>后端接口</b>
+      <a id="fxc_apiLink" href="/api/news" target="_blank" rel="noopener">/api/news</a>
+      <span id="fxc_count">加载中…</span>
+    </div>
+
+    <main class="fxc_list" id="fxc_list">
+      <div class="fxc_state">正在从 /api/news 获取新闻数据…</div>
+    </main>
+
+  </div>
+
+  <script src="js/fxc_news.js"></script>
+</body>
+</html>

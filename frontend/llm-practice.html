@@ -1,0 +1,185 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：LLM 实践操作痕迹
+  功能简介：四项大模型实践的现场演示页。
+     01 AI 客服：下拉框在「七牛云 / 硅基流动」之间切换供应商，后端按选择读取 .env 配置，
+        切换后可以继续对话；
+     02 知识库：上传文件、查看文档列表、基于知识库提问并展示命中来源；
+     03 图像识别：上传图片，返回中文描述；
+     04 语音识别：上传语音，返回识别文字。
+     所有请求与响应同时打印到浏览器控制台。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM 实践操作痕迹 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_llm.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">LLM 实践操作痕迹</h1>
+    <p class="fxc_sub">四项大模型能力现场演示：AI 客服供应商切换、知识库问答、图像识别、语音识别。接口：<code>/api/service</code>、<code>/api/kb/*</code>、<code>/api/vision</code>、<code>/api/asr</code></p>
+
+    <nav class="fxc_tabs" id="fxc_tabs">
+      <button class="fxc_tab fxc_tab_on" type="button" data-fxc-tab="service">01 · AI 客服</button>
+      <button class="fxc_tab" type="button" data-fxc-tab="kb">02 · 知识库</button>
+      <button class="fxc_tab" type="button" data-fxc-tab="vision">03 · 图像识别</button>
+      <button class="fxc_tab" type="button" data-fxc-tab="asr">04 · 语音识别</button>
+    </nav>
+
+    <!-- 01 AI 客服 -->
+    <section class="fxc_panel fxc_panel_on" id="fxc_panel_service">
+      <div class="fxc_block">
+        <div class="fxc_row">
+          <label class="fxc_label" for="fxc_provider">模型供应商</label>
+          <select class="fxc_select" id="fxc_provider">
+            <option value="qiniu">七牛云 · deepseek-v4-flash</option>
+            <option value="siliconflow">硅基流动 · DeepSeek-V4-Flash</option>
+          </select>
+          <span class="fxc_hint" id="fxc_providerHint">切换后直接发消息即可，后端按选择读取 .env 配置</span>
+        </div>
+
+        <div class="fxc_chat" id="fxc_chat">
+          <div class="fxc_empty">还未开始对话。先在上面选择供应商，再发送第一条消息。</div>
+        </div>
+
+        <div class="fxc_row fxc_row_bottom">
+          <input class="fxc_input" id="fxc_serviceInput" type="text"
+            placeholder="例如：打开页面提示接口不存在怎么办？">
+          <button class="fxc_btn" id="fxc_serviceSend" type="button">发送</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 知识库 -->
+    <section class="fxc_panel" id="fxc_panel_kb">
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">上传知识库文件</span>
+          <span class="fxc_count">单文件 ≤ 10MB</span>
+        </div>
+        <div class="fxc_drop" id="fxc_kbDrop">
+          <div class="fxc_dropMain">点击选择文件，或把文件拖到这里</div>
+          <div class="fxc_dropHint">支持 txt / md / docx / doc / pptx / ppt / pdf</div>
+        </div>
+        <input type="file" id="fxc_kbFile" accept=".txt,.md,.docx,.doc,.pptx,.ppt,.pdf" hidden>
+        <div class="fxc_msg" id="fxc_kbMsg"></div>
+      </div>
+
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">知识库文件</span>
+          <span class="fxc_count" id="fxc_kbCount">加载中…</span>
+        </div>
+        <div class="fxc_docs" id="fxc_kbDocs"></div>
+      </div>
+
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">基于知识库提问</span>
+          <span class="fxc_count">先检索 4 段最相关资料</span>
+        </div>
+        <div class="fxc_row">
+          <input class="fxc_input" id="fxc_kbQuestion" type="text"
+            placeholder="例如：数据库连接失败怎么排查？">
+          <button class="fxc_btn" id="fxc_kbAsk" type="button">提问</button>
+        </div>
+        <div class="fxc_answer" id="fxc_kbAnswer"></div>
+        <div class="fxc_sources" id="fxc_kbSources"></div>
+      </div>
+    </section>
+
+    <!-- 03 图像识别 -->
+    <section class="fxc_panel" id="fxc_panel_vision">
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">上传图片</span>
+          <span class="fxc_count" id="fxc_visionMeta">未选择</span>
+        </div>
+        <div class="fxc_drop" id="fxc_visionDrop">
+          <div class="fxc_dropMain">点击选择图片，或把图片拖到这里</div>
+          <div class="fxc_dropHint">支持 jpg / png / webp / gif，单张 ≤ 8MB</div>
+        </div>
+        <input type="file" id="fxc_visionFile" accept="image/*" hidden>
+        <div class="fxc_preview" id="fxc_visionPreview"></div>
+        <div class="fxc_msg" id="fxc_visionMsg"></div>
+        <button class="fxc_btn fxc_btn_full" id="fxc_visionSend" type="button" disabled>开始识别</button>
+      </div>
+
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">识别结果</span>
+          <span class="fxc_count">deepseek-v4-flash-vision-exp</span>
+        </div>
+        <div class="fxc_answer" id="fxc_visionAnswer">等待上传图片…</div>
+      </div>
+    </section>
+
+    <!-- 04 语音识别 -->
+    <section class="fxc_panel" id="fxc_panel_asr">
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">上传语音</span>
+          <span class="fxc_count" id="fxc_asrMeta">未选择</span>
+        </div>
+        <div class="fxc_drop" id="fxc_asrDrop">
+          <div class="fxc_dropMain">点击选择音频，或把音频拖到这里</div>
+          <div class="fxc_dropHint">支持 mp3 / wav / m4a / ogg / webm，单个 ≤ 10MB</div>
+        </div>
+        <input type="file" id="fxc_asrFile" accept="audio/*" hidden>
+        <div class="fxc_preview" id="fxc_asrPreview"></div>
+        <div class="fxc_msg" id="fxc_asrMsg"></div>
+        <button class="fxc_btn fxc_btn_full" id="fxc_asrSend" type="button" disabled>开始识别</button>
+      </div>
+
+      <div class="fxc_block">
+        <div class="fxc_blockHead">
+          <span class="fxc_blockTitle">识别文字</span>
+          <span class="fxc_count">qwen-audio-3.0-asr-flash</span>
+        </div>
+        <div class="fxc_answer" id="fxc_asrAnswer">等待上传语音…</div>
+      </div>
+    </section>
+
+    <!-- 05 操作痕迹：截图存档 -->
+    <section class="fxc_evidenceWrap">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">05 · 操作痕迹（截图存档）</span>
+        <span class="fxc_count">2026-11-23 实测</span>
+      </div>
+      <div class="fxc_evidence">
+        <figure class="fxc_shot">
+          <img src="images/llm-evidence/llm-01-service-qiniu.png" alt="AI 客服 · 七牛云回复">
+          <figcaption><b>01</b>AI 客服 · 七牛云回复</figcaption>
+        </figure>
+        <figure class="fxc_shot">
+          <img src="images/llm-evidence/llm-02-service-siliconflow.png" alt="AI 客服 · 切换硅基流动后继续对话">
+          <figcaption><b>02</b>AI 客服 · 切换硅基流动后继续对话</figcaption>
+        </figure>
+        <figure class="fxc_shot">
+          <img src="images/llm-evidence/llm-03-knowledge.png" alt="知识库上传与问答">
+          <figcaption><b>03</b>知识库 · 文件列表与检索问答</figcaption>
+        </figure>
+        <figure class="fxc_shot">
+          <img src="images/llm-evidence/llm-04-vision.png" alt="图像识别结果">
+          <figcaption><b>04</b>图像识别 · 上传小笼包图片返回描述</figcaption>
+        </figure>
+        <figure class="fxc_shot">
+          <img src="images/llm-evidence/llm-05-asr.png" alt="语音识别结果">
+          <figcaption><b>05</b>语音识别 · 上传 m4a 返回文字</figcaption>
+        </figure>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/fxc_llm.js"></script>
+</body>
+</html>

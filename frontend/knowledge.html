@@ -1,0 +1,69 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：知识库问答（RAG）
+  功能简介：上传 txt / md / docx / doc / pptx / ppt / pdf 文档，服务端解析切块
+     存入 MySQL；提问时先按关键词检索最相关片段，再连同问题发给七牛云大模型，
+     返回回答与命中来源。请求与响应同时输出到浏览器与服务端控制台。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识库问答 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_kb.css">
+</head>
+<body>
+  <div class="fxc_shell">
+
+    <a class="fxc_back" href="index.html">← 返回作品首页</a>
+
+    <h1 class="fxc_title">知识库问答</h1>
+    <p class="fxc_sub">上传资料 → 自动解析切块入库 → 提问时先检索再作答。接口：<code>/api/kb/upload</code>、<code>/api/kb/list</code>、<code>/api/kb/ask</code></p>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">01 · 上传知识库文件</span>
+        <span class="fxc_count">单文件 ≤ 10MB</span>
+      </div>
+
+      <div class="fxc_drop" id="fxc_drop">
+        <div class="fxc_dropMain">点击选择文件，或把文件拖到这里</div>
+        <div class="fxc_dropHint">支持 txt / md / docx / doc / pptx / ppt / pdf</div>
+      </div>
+      <input type="file" id="fxc_file" accept=".txt,.md,.docx,.doc,.pptx,.ppt,.pdf" hidden>
+
+      <div class="fxc_msg" id="fxc_msg"></div>
+    </section>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">02 · 知识库管理</span>
+        <span class="fxc_count" id="fxc_docCount">加载中…</span>
+      </div>
+      <div class="fxc_docs" id="fxc_docs"></div>
+    </section>
+
+    <section class="fxc_block">
+      <div class="fxc_blockHead">
+        <span class="fxc_blockTitle">03 · 基于知识库提问</span>
+        <span class="fxc_count">先检索 4 段最相关资料</span>
+      </div>
+
+      <div class="fxc_askRow">
+        <input class="fxc_input" id="fxc_question" type="text"
+          placeholder="例如：数据库连接失败怎么排查？">
+        <button class="fxc_btn" id="fxc_askBtn" type="button">提问</button>
+      </div>
+
+      <div class="fxc_answer" id="fxc_answer"></div>
+      <div class="fxc_sources" id="fxc_sources"></div>
+    </section>
+
+  </div>
+
+  <script src="js/fxc_kb.js"></script>
+</body>
+</html>

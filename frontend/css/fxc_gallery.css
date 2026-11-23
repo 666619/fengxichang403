@@ -1,0 +1,151 @@
+/**
+ * 姓名：【冯玺成】 | 学号：【24001010403】 |
+ * 时间：2026-11-19 | 大模型：DeepSeek-V4.1-Flash
+ *
+ * 功能简介：图文列表页样式。双列卡片网格，图片在上、文字在下；
+ *   窄屏自动切单列，缺图时用占位底色兜底。
+ */
+:root {
+  --fxc_bg: #0B0E13;
+  --fxc_ink: #ECE7DE;
+  --fxc_dim: #8C93A0;
+  --fxc_gold: #D6B06C;
+  --fxc_line: rgba(236, 231, 222, .14);
+  --fxc_bad: #D9534F;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(1000px 640px at 80% -12%, #1A202B 0%, var(--fxc_bg) 60%);
+  color: var(--fxc_ink);
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  line-height: 1.75;
+  padding: 0 20px 64px;
+}
+
+.fxc_shell { max-width: 960px; margin: 0 auto; padding-top: 56px; }
+
+.fxc_back {
+  display: inline-block;
+  font-size: 12.5px;
+  color: var(--fxc_dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--fxc_line);
+  margin-bottom: 24px;
+}
+.fxc_back:hover { color: var(--fxc_gold); border-bottom-color: var(--fxc_gold); }
+
+.fxc_title {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+
+.fxc_sub { color: var(--fxc_dim); font-size: 13px; margin: 8px 0 22px; }
+
+.fxc_api {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  border: 1px solid var(--fxc_line);
+  border-left: 3px solid var(--fxc_gold);
+  background: rgba(214, 176, 108, .06);
+  padding: 11px 14px;
+  font-size: 12.5px;
+  color: var(--fxc_dim);
+  margin-bottom: 26px;
+}
+.fxc_api b { color: var(--fxc_gold); font-weight: 500; letter-spacing: .08em; }
+.fxc_api a {
+  font-family: Consolas, "Courier New", monospace;
+  color: var(--fxc_ink);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--fxc_line);
+  word-break: break-all;
+}
+.fxc_api a:hover { color: var(--fxc_gold); border-bottom-color: var(--fxc_gold); }
+
+/* 卡片网格 */
+.fxc_grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fxc_card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--fxc_line);
+  background: linear-gradient(165deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012));
+  overflow: hidden;
+  transition: border-color .25s ease, transform .25s ease;
+}
+.fxc_card:hover {
+  border-color: rgba(214, 176, 108, .45);
+  transform: translateY(-3px);
+}
+
+.fxc_fig {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #171B22;
+  overflow: hidden;
+}
+.fxc_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s ease;
+}
+.fxc_card:hover .fxc_img { transform: scale(1.03); }
+
+.fxc_tag {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: #15180E;
+  background: var(--fxc_gold);
+  padding: 2px 9px;
+}
+
+.fxc_body { padding: 16px 18px 18px; }
+
+.fxc_cardTitle { font-size: 16.5px; font-weight: 500; letter-spacing: .01em; }
+
+.fxc_desc {
+  color: var(--fxc_dim);
+  font-size: 13px;
+  margin-top: 6px;
+  text-align: justify;
+}
+
+.fxc_date {
+  margin-top: 10px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11.5px;
+  color: var(--fxc_dim);
+}
+
+.fxc_state {
+  grid-column: 1 / -1;
+  padding: 40px 8px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--fxc_dim);
+  line-height: 2;
+}
+.fxc_state_bad { color: var(--fxc_bad); }
+
+@media (max-width: 680px) {
+  .fxc_shell { padding-top: 38px; }
+  .fxc_title { font-size: 25px; }
+  .fxc_grid { grid-template-columns: 1fr; }
+}

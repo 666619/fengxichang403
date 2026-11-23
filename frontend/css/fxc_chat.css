@@ -1,0 +1,179 @@
+/**
+ * 姓名：【冯玺成】 | 学号：【24001010403】 |
+ * 时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+ *
+ * 功能简介：AI 聊天页样式。整屏对话布局：顶部信息栏、中部可滚动消息区、
+ *   底部输入区；用户气泡在右、模型气泡在左，窄屏自适应。
+ */
+:root {
+  --fxc_bg: #0B0E13;
+  --fxc_panel: #12161D;
+  --fxc_ink: #ECE7DE;
+  --fxc_dim: #8C93A0;
+  --fxc_gold: #D6B06C;
+  --fxc_line: rgba(236, 231, 222, .14);
+  --fxc_bad: #D9534F;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(900px 520px at 80% -10%, #1A202B 0%, var(--fxc_bg) 62%);
+  color: var(--fxc_ink);
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  line-height: 1.7;
+  overflow: hidden;
+}
+
+/* 顶部信息栏 */
+.fxc_top {
+  flex: none;
+  padding: 16px 22px 13px;
+  border-bottom: 1px solid var(--fxc_line);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+.fxc_topLeft { display: flex; align-items: baseline; gap: 12px; }
+.fxc_back {
+  font-size: 12.5px;
+  color: var(--fxc_dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--fxc_line);
+}
+.fxc_back:hover { color: var(--fxc_gold); border-bottom-color: var(--fxc_gold); }
+
+.fxc_title {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: .05em;
+}
+
+.fxc_api {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11.5px;
+  color: var(--fxc_dim);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fxc_api a { color: var(--fxc_gold); text-decoration: none; border-bottom: 1px dashed rgba(214, 176, 108, .4); }
+.fxc_api a:hover { border-bottom-style: solid; }
+
+/* 消息区 */
+.fxc_msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-behavior: smooth;
+}
+
+.fxc_row { display: flex; }
+.fxc_row_user { justify-content: flex-end; }
+
+.fxc_bubble {
+  max-width: min(640px, 82%);
+  padding: 11px 15px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid var(--fxc_line);
+  background: var(--fxc_panel);
+  border-radius: 2px;
+}
+.fxc_row_user .fxc_bubble {
+  background: rgba(214, 176, 108, .14);
+  border-color: rgba(214, 176, 108, .38);
+  color: var(--fxc_ink);
+}
+.fxc_bubble_bad {
+  border-color: rgba(217, 83, 79, .5);
+  background: rgba(217, 83, 79, .1);
+  color: var(--fxc_bad);
+}
+
+.fxc_meta {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+  color: var(--fxc_dim);
+  margin-bottom: 5px;
+}
+.fxc_row_user .fxc_meta { text-align: right; }
+
+/* 输入区 */
+.fxc_composer {
+  flex: none;
+  border-top: 1px solid var(--fxc_line);
+  padding: 14px 22px calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  background: rgba(11, 14, 19, .85);
+}
+
+.fxc_input {
+  flex: 1;
+  min-height: 46px;
+  max-height: 140px;
+  resize: none;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fxc_ink);
+  background: rgba(0, 0, 0, .3);
+  border: 1px solid var(--fxc_line);
+  border-radius: 2px;
+  outline: none;
+  transition: border-color .2s ease;
+}
+.fxc_input:focus { border-color: var(--fxc_gold); }
+.fxc_input::placeholder { color: #5D6470; }
+
+.fxc_send {
+  flex: none;
+  height: 46px;
+  padding: 0 22px;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: .1em;
+  color: #15180E;
+  background: var(--fxc_gold);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: filter .2s ease, opacity .2s ease;
+}
+.fxc_send:hover { filter: brightness(1.08); }
+.fxc_send:disabled { opacity: .5; cursor: not-allowed; }
+
+.fxc_hint {
+  flex: none;
+  padding: 0 22px 10px;
+  font-size: 11.5px;
+  color: var(--fxc_dim);
+  font-family: Consolas, "Courier New", monospace;
+}
+
+@media (max-width: 560px) {
+  .fxc_top { padding: 13px 15px 11px; }
+  .fxc_title { font-size: 17px; }
+  .fxc_msgs { padding: 15px; }
+  .fxc_bubble { max-width: 88%; font-size: 13.5px; }
+  .fxc_composer { padding: 11px 15px calc(11px + env(safe-area-inset-bottom)); gap: 9px; }
+  .fxc_send { padding: 0 16px; }
+  .fxc_hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fxc_msgs { scroll-behavior: auto; }
+}

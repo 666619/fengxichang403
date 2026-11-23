@@ -1,0 +1,44 @@
+<!--
+  姓名：【冯玺成】 | 学号：【24001010403】 |
+  时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+
+  功能名称：AI 聊天
+  功能简介：基于硅基流动（SiliconFlow）对话接口的网页聊天应用。前端把对话历史
+     提交到后端 /api/chat，由服务端携带 API Key 请求模型并返回回复；
+     密钥只保存在 backend/.env，不会出现在页面代码中。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AI 聊天 · 高级网页设计</title>
+  <link rel="stylesheet" href="css/fxc_chat.css">
+</head>
+<body>
+
+  <header class="fxc_top">
+    <div class="fxc_topLeft">
+      <a class="fxc_back" href="index.html">← 返回首页</a>
+      <h1 class="fxc_title">AI 聊天</h1>
+    </div>
+    <div class="fxc_api">
+      <span>接口</span>
+      <a href="/api/chat" target="_blank" rel="noopener">POST /api/chat</a>
+      <span>模型 deepseek-v4-flash</span>
+    </div>
+  </header>
+
+  <main class="fxc_msgs" id="fxc_msgs" aria-live="polite"></main>
+
+  <p class="fxc_hint">Enter 发送 · Shift + Enter 换行</p>
+
+  <form class="fxc_composer" id="fxc_form" onsubmit="return false;">
+    <textarea class="fxc_input" id="fxc_input" rows="1"
+      placeholder="输入你的问题，例如：用 flex 实现三栏布局"></textarea>
+    <button class="fxc_send" id="fxc_send" type="button">发送</button>
+  </form>
+
+  <script src="js/fxc_chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+/**
+ * 姓名：【冯玺成】 | 学号：【24001010403】 |
+ * 时间：2026-11-23 | 大模型：DeepSeek-V4.1-Flash
+ *
+ * 功能简介：图像识别页面样式。沿用知识库页面的深色 + 金色视觉语言，
+ *   增加图片预览框与识别按钮，窄屏下按钮独占一行。
+ */
+:root {
+  --fxc_bg: #0B0E13;
+  --fxc_panel: #12161D;
+  --fxc_ink: #ECE7DE;
+  --fxc_dim: #8C93A0;
+  --fxc_gold: #D6B06C;
+  --fxc_line: rgba(236, 231, 222, .14);
+  --fxc_ok: #4CAF7D;
+  --fxc_bad: #D9534F;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(1000px 620px at 80% -12%, #1A202B 0%, var(--fxc_bg) 62%);
+  color: var(--fxc_ink);
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  line-height: 1.75;
+  padding: 0 20px 60px;
+}
+
+.fxc_shell { max-width: 900px; margin: 0 auto; padding-top: 54px; }
+
+.fxc_back {
+  display: inline-block;
+  font-size: 12.5px;
+  color: var(--fxc_dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--fxc_line);
+  margin-bottom: 22px;
+}
+.fxc_back:hover { color: var(--fxc_gold); border-bottom-color: var(--fxc_gold); }
+
+.fxc_title {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 31px;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+.fxc_sub { color: var(--fxc_dim); font-size: 13px; margin: 8px 0 24px; }
+.fxc_sub code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: var(--fxc_gold);
+}
+
+.fxc_block {
+  border: 1px solid var(--fxc_line);
+  background: linear-gradient(165deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012));
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.fxc_blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+.fxc_blockTitle { font-size: 14px; letter-spacing: .06em; color: var(--fxc_gold); }
+.fxc_count { font-family: Consolas, "Courier New", monospace; font-size: 11.5px; color: var(--fxc_dim); }
+
+/* 选择图片 */
+.fxc_drop {
+  border: 1px dashed rgba(236, 231, 222, .26);
+  padding: 26px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+}
+.fxc_drop:hover, .fxc_drop_over {
+  border-color: var(--fxc_gold);
+  background: rgba(214, 176, 108, .06);
+}
+.fxc_dropMain { font-size: 14px; }
+.fxc_dropHint {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11.5px;
+  color: var(--fxc_dim);
+  margin-top: 6px;
+}
+
+.fxc_preview { margin-top: 14px; display: none; }
+.fxc_preview_show { display: block; }
+.fxc_preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  border: 1px solid var(--fxc_line);
+  background: #000;
+}
+
+.fxc_msg { margin-top: 10px; font-size: 13px; display: none; }
+.fxc_msg_show { display: block; }
+.fxc_msg_ok { color: var(--fxc_ok); }
+.fxc_msg_bad { color: var(--fxc_bad); }
+
+.fxc_btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 11px 0;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: .08em;
+  color: #15180E;
+  background: var(--fxc_gold);
+  border: none;
+  cursor: pointer;
+  transition: filter .2s ease, opacity .2s ease;
+}
+.fxc_btn:hover { filter: brightness(1.08); }
+.fxc_btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 识别结果 */
+.fxc_answer {
+  padding: 13px 15px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  color: var(--fxc_dim);
+  border-left: 3px solid var(--fxc_line);
+  background: rgba(255, 255, 255, .02);
+}
+.fxc_answer_ready {
+  color: var(--fxc_ink);
+  border-left-color: var(--fxc_gold);
+  background: rgba(214, 176, 108, .06);
+}
+
+@media (max-width: 620px) {
+  .fxc_shell { padding-top: 36px; }
+  .fxc_title { font-size: 24px; }
+  .fxc_block { padding: 15px; }
+}
